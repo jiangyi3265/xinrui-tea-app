@@ -1,0 +1,530 @@
+/* Recovered H5 module map. See README.md for source limitations. */
+export default {
+  1425: function (e, t, i) {
+    var a = i("c630");
+    ("string" === typeof a && (a = [[e.i, a, ""]]),
+      a.locals && (e.exports = a.locals));
+    var o = i("4f06").default;
+    o("d26f4ff2", a, !0, { sourceMap: !1, shadowMode: !1 });
+  },
+  "147e": function (e, t, i) {
+    "use strict";
+    (i.d(t, "b", function () {
+      return o;
+    }),
+      i.d(t, "c", function () {
+        return n;
+      }),
+      i.d(t, "a", function () {
+        return a;
+      }));
+    var a = { shoproLoginModal: i("4935").default },
+      o = function () {
+        var e = this,
+          t = e.$createElement,
+          a = e._self._c || t;
+        return a(
+          "v-uni-view",
+          { staticClass: "shoporder" },
+          [
+            a(
+              "v-uni-view",
+              { staticClass: "navTab bgbottom" },
+              [
+                a(
+                  "v-uni-view",
+                  {
+                    class: "all" == e.showTab ? "active" : "",
+                    on: {
+                      click: function (t) {
+                        ((arguments[0] = t = e.$handleEvent(t)), e.tab("all"));
+                      },
+                    },
+                  },
+                  [e._v("全部")],
+                ),
+                a(
+                  "v-uni-view",
+                  {
+                    class: "payment" == e.showTab ? "active" : "",
+                    on: {
+                      click: function (t) {
+                        ((arguments[0] = t = e.$handleEvent(t)),
+                          e.tab("payment"));
+                      },
+                    },
+                  },
+                  [e._v("待付款")],
+                ),
+                a(
+                  "v-uni-view",
+                  {
+                    class: "forwarding" == e.showTab ? "active" : "",
+                    on: {
+                      click: function (t) {
+                        ((arguments[0] = t = e.$handleEvent(t)),
+                          e.tab("forwarding"));
+                      },
+                    },
+                  },
+                  [e._v("待发货")],
+                ),
+                a(
+                  "v-uni-view",
+                  {
+                    class: "received" == e.showTab ? "active" : "",
+                    on: {
+                      click: function (t) {
+                        ((arguments[0] = t = e.$handleEvent(t)),
+                          e.tab("received"));
+                      },
+                    },
+                  },
+                  [e._v("待收货")],
+                ),
+                a(
+                  "v-uni-view",
+                  {
+                    class: "completed" == e.showTab ? "active" : "",
+                    on: {
+                      click: function (t) {
+                        ((arguments[0] = t = e.$handleEvent(t)),
+                          e.tab("completed"));
+                      },
+                    },
+                  },
+                  [e._v("已完成")],
+                ),
+              ],
+              1,
+            ),
+            a(
+              "v-uni-view",
+              { staticClass: "order_m" },
+              e._l(e.goodlist, function (t, i) {
+                return a(
+                  "v-uni-view",
+                  { key: t.order_id, staticClass: "every bgbottom" },
+                  [
+                    a(
+                      "v-uni-view",
+                      { staticClass: "order_title" },
+                      [
+                        a("v-uni-view", [
+                          e._v("订单编号：" + e._s(t.order_no)),
+                        ]),
+                        a("v-uni-view", [e._v(e._s(t.status))]),
+                      ],
+                      1,
+                    ),
+                    e._l(t.goods, function (i) {
+                      return a(
+                        "v-uni-view",
+                        {
+                          key: i.goods_id,
+                          staticClass: "detail_con clearfix",
+                          on: {
+                            click: function (i) {
+                              ((arguments[0] = i = e.$handleEvent(i)),
+                                e.detail(t.order_id, t.status, t.order_type));
+                            },
+                          },
+                        },
+                        [
+                          a("v-uni-image", {
+                            attrs: { src: i.image.file_path },
+                          }),
+                          a(
+                            "v-uni-view",
+                            { staticClass: "right" },
+                            [
+                              a(
+                                "v-uni-view",
+                                [
+                                  a("v-uni-view", [e._v(e._s(i.goods_name))]),
+                                  i.goods_attr
+                                    ? a(
+                                        "v-uni-view",
+                                        { staticClass: "shop_sku" },
+                                        [
+                                          a("v-uni-text", [
+                                            e._v(e._s(i.goods_attr)),
+                                          ]),
+                                        ],
+                                        1,
+                                      )
+                                    : e._e(),
+                                ],
+                                1,
+                              ),
+                              a(
+                                "v-uni-view",
+                                [
+                                  4 == t.order_type
+                                    ? a("v-uni-view", [
+                                        e._v(e._s(i.goods_price) + "U"),
+                                      ])
+                                    : e._e(),
+                                  5 == t.order_type || 7 == t.order_type
+                                    ? a(
+                                        "v-uni-view",
+                                        [
+                                          a("v-uni-text", [
+                                            e._v(e._s(i.score_price) + "积分"),
+                                          ]),
+                                          0 != i.goods_price
+                                            ? a("v-uni-text", [
+                                                e._v(
+                                                  "+ " +
+                                                    e._s(i.goods_price) +
+                                                    "U",
+                                                ),
+                                              ])
+                                            : e._e(),
+                                        ],
+                                        1,
+                                      )
+                                    : e._e(),
+                                  a("v-uni-view", [
+                                    e._v("X" + e._s(i.total_num)),
+                                  ]),
+                                ],
+                                1,
+                              ),
+                            ],
+                            1,
+                          ),
+                        ],
+                        1,
+                      );
+                    }),
+                    a(
+                      "v-uni-view",
+                      { staticClass: "box_btn" },
+                      [
+                        "待付款" == t.status
+                          ? a(
+                              "v-uni-view",
+                              {
+                                staticClass: "first_btn",
+                                on: {
+                                  click: function (i) {
+                                    ((arguments[0] = i = e.$handleEvent(i)),
+                                      e.quxiao(t.order_id));
+                                  },
+                                },
+                              },
+                              [e._v("取消订单")],
+                            )
+                          : e._e(),
+                        "待评价" == t.status || ("已完成" == t.status || "已取消" == t.status)
+                          ? a(
+                              "v-uni-view",
+                              {
+                                staticClass: "first_btn",
+                                on: {
+                                  click: function (i) {
+                                    ((arguments[0] = i = e.$handleEvent(i)),
+                                      e.delorder(t.order_id));
+                                  },
+                                },
+                              },
+                              [e._v("删除订单")],
+                            )
+                          : e._e(),
+                        "20" == t.receipt_status.value &&
+                        10 == t.evaluation_status
+                          ? a(
+                              "v-uni-view",
+                              {
+                                staticClass: "tow_btn",
+                                on: {
+                                  click: function (i) {
+                                    ((arguments[0] = i = e.$handleEvent(i)),
+                                      e.toPage(
+                                        "comment?order_id=" +
+                                          t.order_id +
+                                          "&id=" +
+                                          t.goods[0].goods_id,
+                                      ));
+                                  },
+                                },
+                              },
+                              [e._v("去评价")],
+                            )
+                          : e._e(),
+                        "待收货" == t.status
+                          ? a(
+                              "v-uni-view",
+                              {
+                                staticClass: "tow_btn",
+                                on: {
+                                  click: function (i) {
+                                    ((arguments[0] = i = e.$handleEvent(i)),
+                                      e.receipt(t.order_id));
+                                  },
+                                },
+                              },
+                              [e._v("确认收货")],
+                            )
+                          : e._e(),
+                        "待付款" == t.status
+                          ? a(
+                              "v-uni-view",
+                              {
+                                staticClass: "tow_btn",
+                                on: {
+                                  click: function (i) {
+                                    ((arguments[0] = i = e.$handleEvent(i)),
+                                      e.paymoney(t.order_id));
+                                  },
+                                },
+                              },
+                              [e._v("去付款")],
+                            )
+                          : e._e(),
+                        "待发货" == t.status
+                          ? a(
+                              "v-uni-view",
+                              {
+                                staticClass: "tow_btn",
+                                on: {
+                                  click: function (i) {
+                                    ((arguments[0] = i = e.$handleEvent(i)),
+                                      e.fahuotixing(t.order_id));
+                                  },
+                                },
+                              },
+                              [e._v("提醒发货")],
+                            )
+                          : e._e(),
+                      ],
+                      1,
+                    ),
+                  ],
+                  2,
+                );
+              }),
+              1,
+            ),
+            e.goodlist.length
+              ? e._e()
+              : a(
+                  "v-uni-view",
+                  { staticClass: "nidata" },
+                  [a("v-uni-image", { attrs: { src: i("4584") } })],
+                  1,
+                ),
+            a("shopro-login-modal", {
+              attrs: { showLogin: e.showLogin },
+              on: {
+                loginhidden: function (t) {
+                  ((arguments[0] = t = e.$handleEvent(t)),
+                    e.loginhidden.apply(void 0, arguments));
+                },
+              },
+            }),
+          ],
+          1,
+        );
+      },
+      n = [];
+  },
+  "1aff": function (e, t, i) {
+    "use strict";
+    var a = i("1425"),
+      o = i.n(a);
+    o.a;
+  },
+  4584: function (e, t, i) {
+    e.exports = i.p + "static/img/noimg.89728664.png";
+  },
+  "865f": function (e, t, i) {
+    "use strict";
+    i.r(t);
+    var a = i("147e"),
+      o = i("fb85");
+    for (var n in o)
+      ["default"].indexOf(n) < 0 &&
+        (function (e) {
+          i.d(t, e, function () {
+            return o[e];
+          });
+        })(n);
+    i("1aff");
+    var r,
+      s = i("f0c5"),
+      d = Object(s["a"])(
+        o["default"],
+        a["b"],
+        a["c"],
+        !1,
+        null,
+        "a7eec6da",
+        null,
+        !1,
+        a["a"],
+        r,
+      );
+    t["default"] = d.exports;
+  },
+  c630: function (e, t, i) {
+    var a = i("24fb");
+    ((t = a(!1)),
+      t.push([
+        e.i,
+        '@charset "UTF-8";\n/**\n * 这里是uni-app内置的常用样式变量\n *\n * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量\n * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App\n *\n */\n/**\n * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能\n *\n * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件\n */\n/* 颜色变量 */\n/* 行为相关颜色 */\n/* 文字基本颜色 */\n/* 背景颜色 */\n/* 边框颜色 */\n/* 尺寸变量 */\n/* 文字尺寸 */\n/* 图片尺寸 */\n/* Border Radius */\n/* 水平间距 */\n/* 垂直间距 */\n/* 透明度 */\n/* 文章场景相关 */.shoporder .navTab[data-v-a7eec6da]{position:fixed;top:0;width:100%;height:%?88?%;line-height:%?70?%;background:#fff;z-index:9}.shoporder .navTab uni-view[data-v-a7eec6da]{position:relative;float:left;width:20%;height:100%;text-align:center;color:#333;font-size:%?28?%}.shoporder .navTab .active[data-v-a7eec6da]{font-weight:800;color:#fa3534}.shoporder .navTab .active[data-v-a7eec6da]::after{content:"";position:absolute;bottom:0;width:%?60?%;height:%?6?%;background-color:#fa3534;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%)}.shoporder .order_m[data-v-a7eec6da]{padding-top:%?88?%}.shoporder .order_m .every[data-v-a7eec6da]{padding:0 3%}.shoporder .order_m .every .order_title[data-v-a7eec6da]{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;align-items:center;height:%?86?%;border-bottom:%?2?% solid #eee}.shoporder .order_m .every .order_title uni-view[data-v-a7eec6da]{font-size:%?26?%}.shoporder .order_m .every .order_title uni-view[data-v-a7eec6da]:last-of-type{color:#ff4343}.shoporder .order_m .every .detail_con[data-v-a7eec6da]{padding:%?30?% 0 %?20?%;border-bottom:%?2?% solid #eee}.shoporder .order_m .every .detail_con uni-image[data-v-a7eec6da]{float:left;width:%?188?%;height:%?188?%;border-radius:%?10?%}.shoporder .order_m .every .detail_con .right[data-v-a7eec6da]{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;flex-direction:column;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;float:left;width:calc(100% - %?208?%);margin-left:%?20?%;height:%?188?%}.shoporder .order_m .every .detail_con .right > uni-view:first-of-type uni-view[data-v-a7eec6da]:first-of-type{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;\n  /*! autoprefixer: off */-webkit-box-orient:vertical;\n  /* autoprefixer: on */line-height:%?38?%;font-size:%?28?%}.shoporder .order_m .every .detail_con .right > uni-view:first-of-type uni-view.shop_sku[data-v-a7eec6da]{margin-top:%?10?%}.shoporder .order_m .every .detail_con .right > uni-view:first-of-type uni-view.shop_sku uni-text[data-v-a7eec6da]{background:#eee;color:#999;font-size:%?24?%;border-radius:%?2?%;padding:%?4?% %?6?%}.shoporder .order_m .every .detail_con .right > uni-view[data-v-a7eec6da]:last-of-type{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;align-items:center}.shoporder .order_m .every .detail_con .right > uni-view:last-of-type uni-view[data-v-a7eec6da]:first-of-type,\n.shoporder .order_m .every .detail_con .right > uni-view:last-of-type uni-view uni-text[data-v-a7eec6da]{color:#fa3534;font-weight:800}.shoporder .order_m .every .detail_con .right > uni-view:last-of-type uni-view[data-v-a7eec6da]:last-of-type{font-weight:400;color:#999}.shoporder .order_m .every .box_btn[data-v-a7eec6da]{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:end;-webkit-justify-content:flex-end;justify-content:flex-end;-webkit-box-align:center;-webkit-align-items:center;align-items:center;height:%?100?%}.shoporder .order_m .every .box_btn uni-view[data-v-a7eec6da]{width:%?156?%;height:%?56?%;text-align:center;line-height:%?60?%;font-size:%?26?%;border-radius:%?100?%}.shoporder .order_m .every .box_btn uni-view.first_btn[data-v-a7eec6da]{border:%?2?% solid #999;color:#999}.shoporder .order_m .every .box_btn uni-view.tow_btn[data-v-a7eec6da]{width:%?160?%;height:%?60?%;background:#fa3534;color:#fff;margin-left:%?20?%}',
+        "",
+      ]),
+      (e.exports = t));
+  },
+  c8a9: function (e, t, i) {
+    "use strict";
+    (Object.defineProperty(t, "__esModule", { value: !0 }),
+      (t.default = void 0));
+    t.default = {
+      data: function () {
+        return {
+          showTab: "all",
+          goodlist: [],
+          choosepay: !1,
+          showLogin: !1,
+          payType: 4,
+          orderId: "",
+        };
+      },
+      onLoad: function (e) {
+        (e.showTab && (this.showTab = e.showTab), this.getinit());
+      },
+      methods: {
+        getinit: function () {
+          var e = this;
+          this.request("/order/scoreLists", { dataType: this.showTab }).then(
+            function (t) {
+              (-500 == t.data.code && (e.showLogin = !0),
+                1 == t.data.code &&
+                  ((e.goodlist = t.data.data.list),
+                  e.goodlist.map(function (e, t) {
+                    if(e.order_status && e.order_status.value===20){e.status="已取消";return;}
+                    20 == e.pay_status.value
+                      ? 20 == e.delivery_status.value
+                        ? 20 == e.receipt_status.value
+                          ? 10 == e.evaluation_status
+                            ? (e.status = "去评价")
+                            : 30 == e.order_status.value &&
+                              (e.status = "已完成")
+                          : (e.status = "待收货")
+                        : (e.status = "待发货")
+                      : (e.status = "待付款");
+                  })));
+            },
+          );
+        },
+        detail: function (e, t, i) {
+          4 == i
+            ? uni.navigateTo({
+                url:
+                  "shordetail?order_id=" +
+                  e +
+                  "&status=" +
+                  t +
+                  "&showTab=" +
+                  this.showTab,
+              })
+            : 5 == i &&
+              uni.navigateTo({
+                url: "/pages/integral/jfdetail?order_id=" + e + "&status=" + t,
+              });
+        },
+        quxiao: function (e) {
+          var t = this;
+          this.request("/order/cancel", { order_id: e }).then(function (e) {
+            1 == e.data.code
+              ? (t.$tip(e.data.msg), t.getinit())
+              : t.$tip(e.data.msg);
+          });
+        },
+        delorder: function (e) {
+          var t = this;
+          uni.showModal({
+            title: "删除提示",
+            content: "确认删除这个订单吗？",
+            success: function (i) {
+              i.confirm
+                ? t
+                    .request("/order/removeOrder", { order_id: e })
+                    .then(function (e) {
+                      1 == e.data.code
+                        ? (t.$tip(e.data.msg), t.getinit())
+                        : t.$tip(e.data.msg);
+                    })
+                : i.cancel && console.log("用户点击取消");
+            },
+          });
+        },
+        fahuotixing: function (orderId) {
+          var self = this;
+          if (window.__H5_SERVER_MODE__ !== 'ruoyi') return this.$tip('提醒发货仅在共享后台模式可用');
+          return this.request('/order/remindShipment', { order_id: orderId }).then(function (result) {
+            self.$tip(result.data.msg);
+          }).catch(function () { self.$tip('网络异常，提醒未确认，请重试'); });
+        },
+        loginhidden: function (e) {
+          this.showLogin = e;
+        },
+        tab: function (e) {
+          ((this.showTab = e), this.getinit());
+        },
+        paymoney: function (e) {
+          if (window.__H5_SERVER_MODE__ === 'ruoyi') {
+            uni.navigateTo({ url: '/pages/classify/submit?existing_order_id=' + encodeURIComponent(e) });
+            return;
+          }
+          var t = this;
+          this.request("/order/toPayGoods", {
+            order_id: e,
+            pay_type: 4,
+            order_type: 5,
+          }).then(function (e) {
+            1 == e.data.code
+              ? t
+                  .request("/pay/pointsPayment", {
+                    trade_no: e.data.data.order_sn,
+                  })
+                  .then(function (e) {
+                    1 == e.data.code
+                      ? uni.redirectTo({ url: "/pages/integral/jforder" })
+                      : t.$tip(e.data.msg);
+                  })
+              : t.$tip(e.data.msg);
+          });
+        },
+        receipt: function (e) {
+          var t = this;
+          this.request("/order/receipt", { order_id: e }).then(function (e) {
+            1 == e.data.code
+              ? (t.$tip(e.data.msg), t.getinit())
+              : t.$tip(e.data.msg);
+          });
+        },
+        toPage: function (e) {
+          uni.navigateTo({ url: e });
+        },
+      },
+    };
+  },
+  fb85: function (e, t, i) {
+    "use strict";
+    i.r(t);
+    var a = i("c8a9"),
+      o = i.n(a);
+    for (var n in a)
+      ["default"].indexOf(n) < 0 &&
+        (function (e) {
+          i.d(t, e, function () {
+            return a[e];
+          });
+        })(n);
+    t["default"] = o.a;
+  },
+};

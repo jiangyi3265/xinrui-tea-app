@@ -1,0 +1,32 @@
+{
+  "name": "xinrui-tea-h5",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "鑫芮商贸 H5 页面恢复与本地业务服务",
+  "scripts": {
+    "dev": "node server/index.mjs",
+    "start": "node server/index.mjs",
+    "build": "node scripts/build.mjs",
+    "recover": "node scripts/recover.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "verify": "node scripts/verify.mjs",
+    "local:shared": "node scripts/shared-stack.mjs",
+    "verify:shared": "node scripts/verify-shared.mjs",
+    "verify:nonpay": "node scripts/verify-shared.mjs --release --exclude-payment",
+    "build:release": "TEA_RELEASE_BUILD=1 node scripts/build.mjs",
+    "build:h5": "node scripts/build.mjs",
+    "preview": "node scripts/preview.mjs",
+    "preview:uni": "node scripts/preview.mjs --dir unpackage/dist/build/web --port 5176"
+  },
+  "devDependencies": {
+    "@noble/hashes": "^2.4.0",
+    "acorn": "^8.15.0",
+    "esbuild": "^0.28.2",
+    "fflate": "^0.8.3",
+    "prettier": "^3.6.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

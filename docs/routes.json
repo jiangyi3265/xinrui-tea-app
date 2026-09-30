@@ -1,0 +1,721 @@
+[
+  {
+    "route": "pages/common/rule",
+    "source": "src/pages/pages-common-rule.js",
+    "endpoints": [
+      "/index/getGroupAfterSalesAgreement"
+    ]
+  },
+  {
+    "route": "pages/index/index",
+    "source": "src/pages/pages-index-index.js",
+    "endpoints": [
+      "/category/getCategoryGoodsList",
+      "/goods/getCategory",
+      "/index/getBannerList",
+      "/index/getNavLists",
+      "/index/getOpenNavigation",
+      "/index/getStoreInfo",
+      "/score/getScoreShopList",
+      "/team/getIsCollageList",
+      "/team/getTypesList"
+    ]
+  },
+  {
+    "route": "pages/loot/loot",
+    "source": "src/pages/pages-loot-loot.js",
+    "endpoints": [
+      "/certification/getIsRealName",
+      "/goods/getLootList",
+      "/index/close_consignment",
+      "/index/getBannerList",
+      "/index/getNavLists",
+      "/index/getOpenNavigation",
+      "/index/getStoreInfo",
+      "/index/getSubscribeSetting",
+      "/member/getNotice",
+      "/notice/getNotice",
+      "/order/subscribe",
+      "/order/subscribePay"
+    ]
+  },
+  {
+    "route": "pages/order/order",
+    "source": "src/pages/pages-order-order.js",
+    "endpoints": [
+      "/card/cardList",
+      "/dg/getIsOpen",
+      "/dg/onlinepaymentQuery",
+      "/dg/quickpayConfirm",
+      "/getPayGatWay",
+      "/index/getOpenNavigation",
+      "/member/bindOpenId",
+      "/member/getIsOpenId",
+      "/order/cancel_grab",
+      "/order/getConsignmentCollection",
+      "/order/getLootList",
+      "/order/getPayOrderStatus",
+      "/order/getServiceCharge",
+      "/order/get_balance_pay_count",
+      "/order/payment",
+      "/order/receipt",
+      "/order/removeOrder",
+      "/order/smsCodeSend",
+      "/order/toServiceCharge",
+      "/order/toSplitOrder",
+      "/order/upOrderStatus",
+      "/wx/getCodeToken",
+      "/wx/getPayWxLogin",
+      "/wx/payGateway"
+    ]
+  },
+  {
+    "route": "pages/personal/personal",
+    "source": "src/pages/pages-personal-personal.js",
+    "endpoints": [
+      "/certification/getIsRealName",
+      "/index/getOpenNavigation",
+      "/index/getShareInfo",
+      "/index/getStoreInfo",
+      "/member/getMemberDetails",
+      "/member/personProfit",
+      "/merchant/isStoreApply"
+    ]
+  },
+  {
+    "route": "pages/welfare/welfare",
+    "source": "src/pages/pages-welfare-welfare.js",
+    "endpoints": [
+      "/member/getMyProfit",
+      "/team/getTeamInfo"
+    ]
+  },
+  {
+    "route": "pages/welfare/direct",
+    "source": "src/pages/pages-welfare-direct.js",
+    "endpoints": [
+      "/team/driveDetail"
+    ]
+  },
+  {
+    "route": "pages/welfare/mydetail",
+    "source": "src/pages/pages-welfare-mydetail.js",
+    "endpoints": [
+      "/team/memberInfo"
+    ]
+  },
+  {
+    "route": "pages/welfare/friends",
+    "source": "src/pages/pages-welfare-friends.js",
+    "endpoints": [
+      "/team/memberList"
+    ]
+  },
+  {
+    "route": "pages/welfare/moneys",
+    "source": "src/pages/pages-welfare-moneys.js",
+    "endpoints": [
+      "/team/capitalDetail"
+    ]
+  },
+  {
+    "route": "pages/welfare/order",
+    "source": "src/pages/pages-welfare-order.js",
+    "endpoints": [
+      "/team/orderDetail"
+    ]
+  },
+  {
+    "route": "pages/index/searchlist",
+    "source": "src/pages/pages-index-searchlist.js",
+    "endpoints": [
+      "/goods/searchShop"
+    ]
+  },
+  {
+    "route": "pages/index/faquan",
+    "source": "src/pages/pages-index-faquan.js",
+    "endpoints": [
+      "/circle/download",
+      "/circle/getList",
+      "/index/getOpenNavigation"
+    ]
+  },
+  {
+    "route": "pages/classify/goodsdet",
+    "source": "src/pages/pages-classify-goodsdet.js",
+    "endpoints": [
+      "/goods/getGoodsEvaluation",
+      "/goods/getShopPosterDetails",
+      "/index/getMemberId",
+      "/index/getShareInfo",
+      "/index/getStoreInfo",
+      "/shopgoods/getDetails",
+      "/wx/getXcxBgPoster"
+    ]
+  },
+  {
+    "route": "pages/classify/evaluation",
+    "source": "src/pages/pages-classify-evaluation.js",
+    "endpoints": [
+      "/goods/getGoodsEvaluation"
+    ]
+  },
+  {
+    "route": "pages/classify/setpwd",
+    "source": "src/pages/pages-classify-setpwd.js",
+    "endpoints": [
+      "/member/editMember"
+    ]
+  },
+  {
+    "route": "pages/classify/submit",
+    "source": "src/pages/pages-classify-submit.js",
+    "endpoints": [
+      "/member/bindOpenId",
+      "/member/getIsOpenId",
+      "/member/getIsPayPassword",
+      "/member/verificationPayPassword",
+      "/order/order/buyNow",
+      "/order/originalPricePurchase",
+      "/pay/balancePay",
+      "/pay/pointsPayment",
+      "/wx/getCodeToken",
+      "/wx/getPayWxLogin",
+      "/wx/getSubscriptionId",
+      "/wx/payGateway"
+    ]
+  },
+  {
+    "route": "pages/order/submitDetail",
+    "source": "src/pages/pages-order-submitDetail.js",
+    "endpoints": [
+      "/index/getPaySeeting",
+      "/order/confirm_payment_voucher",
+      "/order/get_balance_pay_in",
+      "/order/get_balance_pay_out",
+      "/order/payment_voucher"
+    ]
+  },
+  {
+    "route": "pages/loot/lootdet",
+    "source": "src/pages/pages-loot-lootdet.js",
+    "endpoints": [
+      "/goods/getIsAuction",
+      "/goods/getLootDetails",
+      "/goods/getPurchaseNum",
+      "/member/getIsPayPassword",
+      "/member/verificationPayPassword",
+      "/order/getServiceCharge",
+      "/order/toAddOrder"
+    ]
+  },
+  {
+    "route": "pages/loot/lootsearch",
+    "source": "src/pages/pages-loot-lootsearch.js",
+    "endpoints": [
+      "/certification/getIsRealName",
+      "/goods/searchShop"
+    ]
+  },
+  {
+    "route": "pages/login/login",
+    "source": "src/pages/pages-login-login.js",
+    "endpoints": [
+      "/index/getShareInfo",
+      "/index/getStoreInfo",
+      "/member/accountLogin"
+    ]
+  },
+  {
+    "route": "pages/login/register",
+    "source": "src/pages/pages-login-register.js",
+    "endpoints": [
+      "/index/getStoreInfo",
+      "/member/getInvitationCode",
+      "/member/registerAnAccount",
+      "/v1/sms"
+    ]
+  },
+  {
+    "route": "pages/login/userserver",
+    "source": "src/pages/pages-login-userserver.js",
+    "endpoints": [
+      "/index/getInvitationNotice"
+    ]
+  },
+  {
+    "route": "pages/order/goodsDetail",
+    "source": "src/pages/pages-order-goodsDetail.js",
+    "endpoints": [
+      "/goods/getLootDetails"
+    ]
+  },
+  {
+    "route": "pages/order/consignGoods",
+    "source": "src/pages/pages-order-consignGoods.js",
+    "endpoints": [
+      "/member/getMemberDetails",
+      "/order/getServiceCharge",
+      "/order/toServiceChargeWithVoucher"
+    ]
+  },
+  {
+    "route": "pages/order/consignPay",
+    "source": "src/pages/pages-order-consignPay.js",
+    "endpoints": [
+      "/index/getPaySeeting",
+      "/index/getStoreInfo",
+      "/order/getListingFeeOrders",
+      "/order/getServiceCharge",
+      "/order/toServiceChargeWithVoucher",
+      "/order/uploadListingFeeVoucher"
+    ]
+  },
+  {
+    "route": "pages/order/listingFeeOrders",
+    "source": "src/pages/pages-order-listingFeeOrders.js",
+    "endpoints": [
+      "/order/getListingFeeOrders"
+    ]
+  },
+  {
+    "route": "pages/order/shoporder",
+    "source": "src/pages/pages-order-shoporder.js",
+    "endpoints": [
+      "/order/cancel",
+      "/order/receipt",
+      "/order/removeOrder",
+      "/order/shopList"
+    ]
+  },
+  {
+    "route": "pages/order/comment",
+    "source": "src/pages/pages-order-comment.js",
+    "endpoints": [
+      "/order/evaluation",
+      "/shopgoods/getDetails"
+    ]
+  },
+  {
+    "route": "pages/order/shordetail",
+    "source": "src/pages/pages-order-shordetail.js",
+    "endpoints": [
+      "/member/order/receipt",
+      "/member/order/removeOrder",
+      "/order/cancel",
+      "/order/detail"
+    ]
+  },
+  {
+    "route": "pages/order/success",
+    "source": "src/pages/pages-order-success.js",
+    "endpoints": [
+      "/recharge/getOk"
+    ]
+  },
+  {
+    "route": "pages/order/pingzheng",
+    "source": "src/pages/pages-order-pingzheng.js",
+    "endpoints": []
+  },
+  {
+    "route": "pages/order/orderdetail",
+    "source": "src/pages/pages-order-orderdetail.js",
+    "endpoints": [
+      "/order/cancel",
+      "/order/detail",
+      "/order/getConsignmentCollection",
+      "/order/getServiceCharge",
+      "/order/receipt",
+      "/order/removeOrder",
+      "/order/toServiceCharge",
+      "/order/toSplitOrder"
+    ]
+  },
+  {
+    "route": "pages/integral/jfdetail",
+    "source": "src/pages/pages-integral-jfdetail.js",
+    "endpoints": [
+      "/member/order/receipt",
+      "/member/order/removeOrder",
+      "/order/detail"
+    ]
+  },
+  {
+    "route": "pages/integral/jforder",
+    "source": "src/pages/pages-integral-jforder.js",
+    "endpoints": [
+      "/order/cancel",
+      "/order/receipt",
+      "/order/removeOrder",
+      "/order/scoreLists",
+      "/order/toPayGoods",
+      "/pay/pointsPayment"
+    ]
+  },
+  {
+    "route": "pages/order/submit",
+    "source": "src/pages/pages-order-submit.js",
+    "endpoints": [
+      "/index/getPaySeeting",
+      "/order/get_balance_pay_out",
+      "/order/payment_voucher"
+    ]
+  },
+  {
+    "route": "pages/order/report",
+    "source": "src/pages/pages-order-report.js",
+    "endpoints": [
+      "/order/getOrderReport",
+      "/order/toOrderReport"
+    ]
+  },
+  {
+    "route": "pages/order/shoukm",
+    "source": "src/pages/pages-order-shoukm.js",
+    "endpoints": [
+      "/member/getMemberDetails",
+      "/member/setPay",
+      "/v1/sms"
+    ]
+  },
+  {
+    "route": "pages/order/skmlist",
+    "source": "src/pages/pages-order-skmlist.js",
+    "endpoints": [
+      "/index/getPaySeeting",
+      "/member/getMemberDetails",
+      "/member/setPay",
+      "/v1/sms"
+    ]
+  },
+  {
+    "route": "pages/order/wuliu",
+    "source": "src/pages/pages-order-wuliu.js",
+    "endpoints": [
+      "/order/express"
+    ]
+  },
+  {
+    "route": "pages/classify/classify",
+    "source": "src/pages/pages-classify-classify.js",
+    "endpoints": [
+      "/category/getCategoryGoodsList",
+      "/goods/getCategory",
+      "/index/getOpenNavigation",
+      "/index/getShareInfo"
+    ]
+  },
+  {
+    "route": "pages/integral/integral",
+    "source": "src/pages/pages-integral-integral.js",
+    "endpoints": [
+      "/category/getCategoryGoodsList",
+      "/goods/getCategory"
+    ]
+  },
+  {
+    "route": "pages/integral/integraldet",
+    "source": "src/pages/pages-integral-integraldet.js",
+    "endpoints": [
+      "/score/getDetails"
+    ]
+  },
+  {
+    "route": "pages/integral/integrallist",
+    "source": "src/pages/pages-integral-integrallist.js",
+    "endpoints": [
+      "/recharge/integralList"
+    ]
+  },
+  {
+    "route": "pages/personal/rule",
+    "source": "src/pages/pages-personal-rule.js",
+    "endpoints": [
+      "/finance/getSystemInfo"
+    ]
+  },
+  {
+    "route": "pages/personal/record",
+    "source": "src/pages/pages-personal-record.js",
+    "endpoints": [
+      "/member/getApplyList"
+    ]
+  },
+  {
+    "route": "pages/personal/voucher",
+    "source": "src/pages/pages-personal-voucher.js",
+    "endpoints": []
+  },
+  {
+    "route": "pages/personal/transfer",
+    "source": "src/pages/pages-personal-transfer.js",
+    "endpoints": [
+      "/member/getIsPayPassword",
+      "/member/getTransfer",
+      "/member/toTransfer",
+      "/member/verificationPayPassword"
+    ]
+  },
+  {
+    "route": "pages/personal/poster",
+    "source": "src/pages/pages-personal-poster.js",
+    "endpoints": [
+      "/member/member/getPoster"
+    ]
+  },
+  {
+    "route": "pages/personal/energyjf",
+    "source": "src/pages/pages-personal-energyjf.js",
+    "endpoints": [
+      "/ustd/recharge"
+    ]
+  },
+  {
+    "route": "pages/personal/energyjf1",
+    "source": "src/pages/pages-personal-energyjf1.js",
+    "endpoints": [
+      "/finance/getAmountInfo",
+      "/recharge/lists"
+    ]
+  },
+  {
+    "route": "pages/personal/balance",
+    "source": "src/pages/pages-personal-balance.js",
+    "endpoints": [
+      "/finance/getAmountLogList",
+      "/member/getMemberDetails"
+    ]
+  },
+  {
+    "route": "pages/personal/rechargeRecord",
+    "source": "src/pages/pages-personal-rechargeRecord.js",
+    "endpoints": [
+      "/ustd/rechargeLog"
+    ]
+  },
+  {
+    "route": "pages/personal/commission",
+    "source": "src/pages/pages-personal-commission.js",
+    "endpoints": [
+      "/member/getECardList",
+      "/member/getMemberDetails"
+    ]
+  },
+  {
+    "route": "pages/personal/recharge",
+    "source": "src/pages/pages-personal-recharge.js",
+    "endpoints": [
+      "/index/getPaySeeting",
+      "/recharge/getOrder",
+      "/recharge/toOrder"
+    ]
+  },
+  {
+    "route": "pages/personal/integrallist",
+    "source": "src/pages/pages-personal-integrallist.js",
+    "endpoints": [
+      "/recharge/integralList"
+    ]
+  },
+  {
+    "route": "pages/personal/direct",
+    "source": "src/pages/pages-personal-direct.js",
+    "endpoints": [
+      "/member/getLevelList"
+    ]
+  },
+  {
+    "route": "pages/personal/team",
+    "source": "src/pages/pages-personal-team.js",
+    "endpoints": [
+      "/member/getMyIndirection"
+    ]
+  },
+  {
+    "route": "pages/personal/set",
+    "source": "src/pages/pages-personal-set.js",
+    "endpoints": [
+      "/member/getMemberDetails"
+    ]
+  },
+  {
+    "route": "pages/personal/personalInfo",
+    "source": "src/pages/pages-personal-personalInfo.js",
+    "endpoints": [
+      "/member/editMember",
+      "/member/getMemberDetails"
+    ]
+  },
+  {
+    "route": "pages/personal/agreement",
+    "source": "src/pages/pages-personal-agreement.js",
+    "endpoints": [
+      "/notice/getNoticeInfo"
+    ]
+  },
+  {
+    "route": "pages/personal/changename",
+    "source": "src/pages/pages-personal-changename.js",
+    "endpoints": [
+      "/member/editMember"
+    ]
+  },
+  {
+    "route": "pages/personal/AddressList",
+    "source": "src/pages/pages-personal-AddressList.js",
+    "endpoints": [
+      "/address/delete",
+      "/address/list",
+      "/address/setDefault"
+    ]
+  },
+  {
+    "route": "pages/personal/addaddress",
+    "source": "src/pages/pages-personal-addaddress.js",
+    "endpoints": [
+      "/address/add",
+      "/address/detail",
+      "/address/edit",
+      "/region/getAllList"
+    ]
+  },
+  {
+    "route": "pages/personal/passwordone",
+    "source": "src/pages/pages-personal-passwordone.js",
+    "endpoints": [
+      "/member/editPwd",
+      "/v1/sms"
+    ]
+  },
+  {
+    "route": "pages/personal/passwordtow",
+    "source": "src/pages/pages-personal-passwordtow.js",
+    "endpoints": [
+      "/member/editPwd"
+    ]
+  },
+  {
+    "route": "pages/personal/identify",
+    "source": "src/pages/pages-personal-identify.js",
+    "endpoints": [
+      "/certification/addRealName",
+      "/member/getMemberDetails",
+      "/member/setPay",
+      "/member/setSignImage"
+    ]
+  },
+  {
+    "route": "pages/personal/msglist",
+    "source": "src/pages/pages-personal-msglist.js",
+    "endpoints": [
+      "/notice/getNotice"
+    ]
+  },
+  {
+    "route": "pages/personal/msgDetail",
+    "source": "src/pages/pages-personal-msgDetail.js",
+    "endpoints": [
+      "/notice/getNoticeInfo"
+    ]
+  },
+  {
+    "route": "pages/loot/listProduct",
+    "source": "src/pages/pages-loot-listProduct.js",
+    "endpoints": [
+      "/goods/getLootList",
+      "/goods/getPurchaseNum",
+      "/loodgoods/getCategoryGoodsList",
+      "/member/getIsPayPassword",
+      "/member/verificationPayPassword",
+      "/order/toAddOrder"
+    ]
+  },
+  {
+    "route": "pages/loot/news_info/news_info",
+    "source": "src/pages/pages-loot-news_info-news_info.js",
+    "endpoints": [
+      "/notice/getNoticeInfo"
+    ]
+  },
+  {
+    "route": "pages/loot/sessionSettle",
+    "source": "src/pages/pages-loot-sessionSettle.js",
+    "endpoints": [
+      "/order/confirm_payment_voucher",
+      "/order/get_balance_pay_in",
+      "/order/get_balance_pay_out"
+    ]
+  },
+  {
+    "route": "pages/loot/sign",
+    "source": "src/pages/pages-loot-sign.js",
+    "endpoints": [
+      "/member/getNotice",
+      "/member/setSignImage"
+    ]
+  },
+  {
+    "route": "pages/order/binding",
+    "source": "src/pages/pages-order-binding.js",
+    "endpoints": [
+      "/card/cardList",
+      "/member/isOpening"
+    ]
+  },
+  {
+    "route": "pages/order/account",
+    "source": "src/pages/pages-order-account.js",
+    "endpoints": [
+      "/member/accountOpening"
+    ]
+  },
+  {
+    "route": "pages/order/bankCard",
+    "source": "src/pages/pages-order-bankCard.js",
+    "endpoints": [
+      "/card/bindAdaPayCard",
+      "/card/bindingCard"
+    ]
+  },
+  {
+    "route": "pages/integral/income",
+    "source": "src/pages/pages-integral-income.js",
+    "endpoints": [
+      "/member/getMyProfit"
+    ]
+  },
+  {
+    "route": "pages/order/dgAccount/account",
+    "source": "src/pages/pages-order-dgAccount-account.js",
+    "endpoints": [
+      "/dg/openAccount"
+    ]
+  },
+  {
+    "route": "pages/order/dgAccount/bankCard",
+    "source": "src/pages/pages-order-dgAccount-bankCard.js",
+    "endpoints": [
+      "/dg/bankApply",
+      "/dg/bankApplyConfirm"
+    ]
+  },
+  {
+    "route": "pages/order/dgAccount/binding",
+    "source": "src/pages/pages-order-dgAccount-binding.js",
+    "endpoints": [
+      "/dg/getBankList",
+      "/dg/getIsOpen",
+      "/dg/unbindCard"
+    ]
+  },
+  {
+    "route": "pages/personal/uploadPz",
+    "source": "src/pages/pages-personal-uploadPz.js",
+    "endpoints": [
+      "/member/getMemberDetails",
+      "/usdt/addvoucher"
+    ]
+  }
+]

@@ -1,0 +1,401 @@
+{
+  "pages-classify-goodsdet.ba572484.js": [
+    "/goods/getGoodsEvaluation",
+    "/goods/getShopPosterDetails",
+    "/index/getMemberId",
+    "/index/getShareInfo",
+    "/index/getStoreInfo",
+    "/shopgoods/getDetails",
+    "/wx/getXcxBgPoster"
+  ],
+  "pages-login-userserver.05204f8e.js": [
+    "/index/getInvitationNotice"
+  ],
+  "pages-personal-set.876659d2.js": [
+    "/member/getMemberDetails"
+  ],
+  "pages-personal-energyjf1.d333e636.js": [
+    "/finance/getAmountInfo",
+    "/recharge/lists"
+  ],
+  "pages-order-report.1ac3144e.js": [
+    "/order/getOrderReport",
+    "/order/toOrderReport"
+  ],
+  "pages-login-register.d224a23b.js": [
+    "/index/getStoreInfo",
+    "/member/getInvitationCode",
+    "/member/registerAnAccount",
+    "/v1/sms"
+  ],
+  "pages-loot-sessionSettle.58cdf12e.js": [
+    "/order/confirm_payment_voucher",
+    "/order/get_balance_pay_in",
+    "/order/get_balance_pay_out"
+  ],
+  "pages-personal-personal.fcfadbee.js": [
+    "/certification/getIsRealName",
+    "/index/getOpenNavigation",
+    "/index/getShareInfo",
+    "/index/getStoreInfo",
+    "/member/getMemberDetails",
+    "/member/personProfit",
+    "/merchant/isStoreApply"
+  ],
+  "pages-order-success.6c96c3f9.js": [
+    "/recharge/getOk"
+  ],
+  "pages-personal-addaddress.1bc06726.js": [
+    "/address/add",
+    "/address/detail",
+    "/address/edit",
+    "/region/getAllList"
+  ],
+  "pages-index-index.4b888fd1.js": [
+    "/category/getCategoryGoodsList",
+    "/goods/getCategory",
+    "/index/getBannerList",
+    "/index/getNavLists",
+    "/index/getOpenNavigation",
+    "/index/getStoreInfo",
+    "/score/getScoreShopList",
+    "/team/getIsCollageList",
+    "/team/getTypesList"
+  ],
+  "pages-personal-msglist.79478d97.js": [
+    "/notice/getNotice"
+  ],
+  "pages-classify-classify.7ec830b4.js": [
+    "/category/getCategoryGoodsList",
+    "/goods/getCategory",
+    "/index/getOpenNavigation",
+    "/index/getShareInfo"
+  ],
+  "pages-order-dgAccount-account.7ae456f0.js": [
+    "/dg/openAccount"
+  ],
+  "pages-loot-listProduct.37007d9a.js": [
+    "/goods/getLootList",
+    "/goods/getPurchaseNum",
+    "/loodgoods/getCategoryGoodsList",
+    "/member/getIsPayPassword",
+    "/member/verificationPayPassword",
+    "/order/toAddOrder"
+  ],
+  "pages-order-comment.9e9ee652.js": [
+    "/order/evaluation",
+    "/shopgoods/getDetails"
+  ],
+  "pages-order-shoukm.9dc547ba.js": [
+    "/member/getMemberDetails",
+    "/member/setPay",
+    "/v1/sms"
+  ],
+  "pages-welfare-welfare.9e7b97fe.js": [
+    "/member/getMyProfit",
+    "/team/getTeamInfo"
+  ],
+  "pages-integral-jfdetail.01d682ef.js": [
+    "/member/order/receipt",
+    "/member/order/removeOrder",
+    "/order/detail"
+  ],
+  "pages-integral-integral.f1d696f7.js": [
+    "/category/getCategoryGoodsList",
+    "/goods/getCategory"
+  ],
+  "pages-order-binding.cd0b9944.js": [
+    "/card/cardList",
+    "/member/isOpening"
+  ],
+  "pages-index-searchlist.a51155f8.js": [
+    "/goods/searchShop"
+  ],
+  "pages-welfare-direct.9e8e0b4e.js": [
+    "/team/driveDetail"
+  ],
+  "pages-order-goodsDetail.86398500.js": [
+    "/goods/getLootDetails"
+  ],
+  "pages-personal-uploadPz.2f3e0eb7.js": [
+    "/member/getMemberDetails",
+    "/usdt/addvoucher"
+  ],
+  "pages-order-bankCard.dfd9e877.js": [
+    "/card/bindAdaPayCard",
+    "/card/bindingCard"
+  ],
+  "pages-order-shoporder.22dc3f32.js": [
+    "/order/cancel",
+    "/order/receipt",
+    "/order/removeOrder",
+    "/order/shopList"
+  ],
+  "pages-personal-rechargeRecord.4b9f5c4b.js": [
+    "/ustd/rechargeLog"
+  ],
+  "pages-personal-rule.4d733189.js": [
+    "/finance/getSystemInfo"
+  ],
+  "pages-classify-setpwd.a10e91e3.js": [
+    "/member/editMember"
+  ],
+  "pages-integral-integraldet.1852e660.js": [
+    "/score/getDetails"
+  ],
+  "pages-personal-transfer.f35294cf.js": [
+    "/member/getIsPayPassword",
+    "/member/getTransfer",
+    "/member/toTransfer",
+    "/member/verificationPayPassword"
+  ],
+  "pages-order-submit.998b3e4d.js": [
+    "/index/getPaySeeting",
+    "/order/get_balance_pay_out",
+    "/order/payment_voucher"
+  ],
+  "pages-order-account.d5b60fc1.js": [
+    "/member/accountOpening"
+  ],
+  "pages-order-order.152f5506.js": [
+    "/card/cardList",
+    "/dg/getIsOpen",
+    "/dg/onlinepaymentQuery",
+    "/dg/quickpayConfirm",
+    "/getPayGatWay",
+    "/index/getOpenNavigation",
+    "/member/bindOpenId",
+    "/member/getIsOpenId",
+    "/order/cancel_grab",
+    "/order/getConsignmentCollection",
+    "/order/getLootList",
+    "/order/getPayOrderStatus",
+    "/order/getServiceCharge",
+    "/order/get_balance_pay_count",
+    "/order/payment",
+    "/order/receipt",
+    "/order/removeOrder",
+    "/order/smsCodeSend",
+    "/order/toServiceCharge",
+    "/order/toSplitOrder",
+    "/order/upOrderStatus",
+    "/wx/getCodeToken",
+    "/wx/getPayWxLogin",
+    "/wx/payGateway"
+  ],
+  "pages-classify-submit.0063e05a.js": [
+    "/member/bindOpenId",
+    "/member/getIsOpenId",
+    "/member/getIsPayPassword",
+    "/member/verificationPayPassword",
+    "/order/order/buyNow",
+    "/order/originalPricePurchase",
+    "/pay/balancePay",
+    "/pay/pointsPayment",
+    "/wx/getCodeToken",
+    "/wx/getPayWxLogin",
+    "/wx/getSubscriptionId",
+    "/wx/payGateway"
+  ],
+  "pages-personal-poster.db73f489.js": [
+    "/member/member/getPoster"
+  ],
+  "pages-personal-passwordtow.c6eacd0e.js": [
+    "/member/editPwd"
+  ],
+  "pages-personal-energyjf.0354f1df.js": [
+    "/ustd/recharge"
+  ],
+  "pages-order-consignPay.459e4256.js": [
+    "/index/getPaySeeting",
+    "/index/getStoreInfo",
+    "/order/getListingFeeOrders",
+    "/order/getServiceCharge",
+    "/order/toServiceChargeWithVoucher",
+    "/order/uploadListingFeeVoucher"
+  ],
+  "pages-personal-direct.ee50fefa.js": [
+    "/member/getLevelList"
+  ],
+  "pages-personal-agreement.fff0ab1d.js": [
+    "/notice/getNoticeInfo"
+  ],
+  "pages-order-submitDetail.67a87234.js": [
+    "/index/getPaySeeting",
+    "/order/confirm_payment_voucher",
+    "/order/get_balance_pay_in",
+    "/order/get_balance_pay_out",
+    "/order/payment_voucher"
+  ],
+  "pages-personal-team.61dbccf1.js": [
+    "/member/getMyIndirection"
+  ],
+  "pages-personal-AddressList.e9851a01.js": [
+    "/address/delete",
+    "/address/list",
+    "/address/setDefault"
+  ],
+  "pages-loot-sign.721aa930.js": [
+    "/member/getNotice",
+    "/member/setSignImage"
+  ],
+  "pages-integral-income.c15a3ad9.js": [
+    "/member/getMyProfit"
+  ],
+  "pages-welfare-mydetail.4549bb44.js": [
+    "/team/memberInfo"
+  ],
+  "pages-order-dgAccount-binding.87b88097.js": [
+    "/dg/getBankList",
+    "/dg/getIsOpen",
+    "/dg/unbindCard"
+  ],
+  "pages-loot-lootdet.3032ff2e.js": [
+    "/goods/getIsAuction",
+    "/goods/getLootDetails",
+    "/goods/getPurchaseNum",
+    "/member/getIsPayPassword",
+    "/member/verificationPayPassword",
+    "/order/getServiceCharge",
+    "/order/toAddOrder"
+  ],
+  "pages-personal-passwordone.5442dd76.js": [
+    "/member/editPwd",
+    "/v1/sms"
+  ],
+  "pages-order-orderdetail.44e69882.js": [
+    "/order/cancel",
+    "/order/detail",
+    "/order/getConsignmentCollection",
+    "/order/getServiceCharge",
+    "/order/receipt",
+    "/order/removeOrder",
+    "/order/toServiceCharge",
+    "/order/toSplitOrder"
+  ],
+  "pages-personal-msgDetail.6713783e.js": [
+    "/notice/getNoticeInfo"
+  ],
+  "pages-order-skmlist.5e9ee810.js": [
+    "/index/getPaySeeting",
+    "/member/getMemberDetails",
+    "/member/setPay",
+    "/v1/sms"
+  ],
+  "pages-loot-news_info-news_info.b6e7a560.js": [
+    "/notice/getNoticeInfo"
+  ],
+  "pages-loot-loot.ed4c7990.js": [
+    "/certification/getIsRealName",
+    "/goods/getLootList",
+    "/index/close_consignment",
+    "/index/getBannerList",
+    "/index/getNavLists",
+    "/index/getOpenNavigation",
+    "/index/getStoreInfo",
+    "/index/getSubscribeSetting",
+    "/member/getNotice",
+    "/notice/getNotice",
+    "/order/subscribe",
+    "/order/subscribePay"
+  ],
+  "pages-personal-identify.7e79744a.js": [
+    "/certification/addRealName",
+    "/member/getMemberDetails",
+    "/member/setPay",
+    "/member/setSignImage"
+  ],
+  "pages-index-faquan.900bfa72.js": [
+    "/circle/download",
+    "/circle/getList",
+    "/index/getOpenNavigation"
+  ],
+  "pages-welfare-order.e8d1b7b0.js": [
+    "/team/orderDetail"
+  ],
+  "pages-personal-commission.17458d75.js": [
+    "/member/getECardList",
+    "/member/getMemberDetails"
+  ],
+  "pages-order-dgAccount-bankCard.1a97e9d5.js": [
+    "/dg/bankApply",
+    "/dg/bankApplyConfirm"
+  ],
+  "pages-order-shoporder~pages-order-shordetail.ddee83c4.js": [
+    "/member/verificationPayPassword",
+    "/order/toPayGoods",
+    "/pay/balancePay",
+    "/wx/payGateway"
+  ],
+  "pages-order-wuliu.75f02d50.js": [
+    "/order/express"
+  ],
+  "pages-personal-integrallist.013cbcfb.js": [
+    "/recharge/integralList"
+  ],
+  "pages-login-login.176a7678.js": [
+    "/index/getShareInfo",
+    "/index/getStoreInfo",
+    "/member/accountLogin"
+  ],
+  "pages-integral-integrallist.b3f2e5ee.js": [
+    "/recharge/integralList"
+  ],
+  "pages-personal-personalInfo.68bf79fd.js": [
+    "/member/editMember",
+    "/member/getMemberDetails"
+  ],
+  "pages-common-rule.fd582f59.js": [
+    "/index/getGroupAfterSalesAgreement"
+  ],
+  "pages-personal-balance.7ef350a9.js": [
+    "/finance/getAmountLogList",
+    "/member/getMemberDetails"
+  ],
+  "pages-personal-recharge.7e6f7a8e.js": [
+    "/index/getPaySeeting",
+    "/recharge/getOrder",
+    "/recharge/toOrder"
+  ],
+  "pages-welfare-moneys.3a7445c2.js": [
+    "/team/capitalDetail"
+  ],
+  "pages-integral-jforder.32c767b7.js": [
+    "/order/cancel",
+    "/order/receipt",
+    "/order/removeOrder",
+    "/order/scoreLists",
+    "/order/toPayGoods",
+    "/pay/pointsPayment"
+  ],
+  "pages-personal-record.01c70499.js": [
+    "/member/getApplyList"
+  ],
+  "pages-order-consignGoods.ca93f457.js": [
+    "/member/getMemberDetails",
+    "/order/getServiceCharge",
+    "/order/toServiceChargeWithVoucher"
+  ],
+  "pages-personal-changename.7c00301c.js": [
+    "/member/editMember"
+  ],
+  "pages-order-listingFeeOrders.47023c6e.js": [
+    "/order/getListingFeeOrders"
+  ],
+  "pages-loot-lootsearch.eb5d2ea7.js": [
+    "/certification/getIsRealName",
+    "/goods/searchShop"
+  ],
+  "pages-classify-evaluation.80889114.js": [
+    "/goods/getGoodsEvaluation"
+  ],
+  "pages-order-shordetail.98059684.js": [
+    "/member/order/receipt",
+    "/member/order/removeOrder",
+    "/order/cancel",
+    "/order/detail"
+  ],
+  "pages-welfare-friends.7330927d.js": [
+    "/team/memberList"
+  ]
+}

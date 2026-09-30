@@ -1,0 +1,417 @@
+/* Recovered H5 module map. See README.md for source limitations. */
+export default {
+  "1a27": function (t, n, i) {
+    "use strict";
+    (i.d(n, "b", function () {
+      return s;
+    }),
+      i.d(n, "c", function () {
+        return a;
+      }),
+      i.d(n, "a", function () {
+        return e;
+      }));
+    var e = {
+        uniIcons: i("2ba4").default,
+        shoproLoginModal: i("4935").default,
+      },
+      s = function () {
+        var t = this,
+          n = t.$createElement,
+          i = t._self._c || n;
+        return i(
+          "v-uni-view",
+          { staticClass: "settings-page" },
+          [
+            i(
+              "v-uni-view",
+              { staticClass: "settings-group" },
+              [
+                i(
+                  "v-uni-view",
+                  {
+                    staticClass: "settings-row",
+                    on: {
+                      click: function (n) {
+                        ((arguments[0] = n = t.$handleEvent(n)),
+                          t.toPage("/pages/personal/personalInfo"));
+                      },
+                    },
+                  },
+                  [
+                    i("v-uni-view", { staticClass: "settings-left" }, [
+                      t._v("个人信息"),
+                    ]),
+                    i(
+                      "v-uni-view",
+                      { staticClass: "settings-right" },
+                      [
+                        i("uni-icons", {
+                          staticClass: "arrow",
+                          attrs: {
+                            color: "#666",
+                            type: "arrowright",
+                            size: "18",
+                          },
+                        }),
+                      ],
+                      1,
+                    ),
+                  ],
+                  1,
+                ),
+              ],
+              1,
+            ),
+            i(
+              "v-uni-view",
+              { staticClass: "settings-group" },
+              [
+                i(
+                  "v-uni-view",
+                  {
+                    staticClass: "settings-row",
+                    on: {
+                      click: function (n) {
+                        ((arguments[0] = n = t.$handleEvent(n)),
+                          t.toAgreement("register"));
+                      },
+                    },
+                  },
+                  [
+                    i("v-uni-view", { staticClass: "settings-left" }, [
+                      t._v("注册协议"),
+                    ]),
+                    i(
+                      "v-uni-view",
+                      { staticClass: "settings-right" },
+                      [
+                        i("uni-icons", {
+                          staticClass: "arrow",
+                          attrs: {
+                            color: "#666",
+                            type: "arrowright",
+                            size: "18",
+                          },
+                        }),
+                      ],
+                      1,
+                    ),
+                  ],
+                  1,
+                ),
+                i(
+                  "v-uni-view",
+                  {
+                    staticClass: "settings-row",
+                    on: {
+                      click: function (n) {
+                        ((arguments[0] = n = t.$handleEvent(n)),
+                          t.toAgreement("privacy"));
+                      },
+                    },
+                  },
+                  [
+                    i("v-uni-view", { staticClass: "settings-left" }, [
+                      t._v("隐私政策"),
+                    ]),
+                    i(
+                      "v-uni-view",
+                      { staticClass: "settings-right" },
+                      [
+                        i("uni-icons", {
+                          staticClass: "arrow",
+                          attrs: {
+                            color: "#666",
+                            type: "arrowright",
+                            size: "18",
+                          },
+                        }),
+                      ],
+                      1,
+                    ),
+                  ],
+                  1,
+                ),
+                i(
+                  "v-uni-view",
+                  {
+                    staticClass: "settings-row",
+                    on: {
+                      click: function (n) {
+                        ((arguments[0] = n = t.$handleEvent(n)),
+                          t.toAgreement("notice"));
+                      },
+                    },
+                  },
+                  [
+                    i("v-uni-view", { staticClass: "settings-left" }, [
+                      t._v("用户须知"),
+                    ]),
+                    i(
+                      "v-uni-view",
+                      { staticClass: "settings-right" },
+                      [
+                        i("uni-icons", {
+                          staticClass: "arrow",
+                          attrs: {
+                            color: "#666",
+                            type: "arrowright",
+                            size: "18",
+                          },
+                        }),
+                      ],
+                      1,
+                    ),
+                  ],
+                  1,
+                ),
+                i(
+                  "v-uni-view",
+                  {
+                    staticClass: "settings-row",
+                    on: {
+                      click: function (n) {
+                        ((arguments[0] = n = t.$handleEvent(n)),
+                          t.toAgreement("c2c"));
+                      },
+                    },
+                  },
+                  [
+                    i("v-uni-view", { staticClass: "settings-left" }, [
+                      t._v("C2C个人支付风险"),
+                    ]),
+                    i(
+                      "v-uni-view",
+                      { staticClass: "settings-right" },
+                      [
+                        i("uni-icons", {
+                          staticClass: "arrow",
+                          attrs: {
+                            color: "#666",
+                            type: "arrowright",
+                            size: "18",
+                          },
+                        }),
+                      ],
+                      1,
+                    ),
+                  ],
+                  1,
+                ),
+                i(
+                  "v-uni-view",
+                  {
+                    staticClass: "settings-row no-border",
+                    on: {
+                      click: function (n) {
+                        ((arguments[0] = n = t.$handleEvent(n)),
+                          t.toAgreement("entrust"));
+                      },
+                    },
+                  },
+                  [
+                    i("v-uni-view", { staticClass: "settings-left" }, [
+                      t._v("委托服务协议"),
+                    ]),
+                    i(
+                      "v-uni-view",
+                      { staticClass: "settings-right" },
+                      [
+                        i("uni-icons", {
+                          staticClass: "arrow",
+                          attrs: {
+                            color: "#666",
+                            type: "arrowright",
+                            size: "18",
+                          },
+                        }),
+                      ],
+                      1,
+                    ),
+                  ],
+                  1,
+                ),
+              ],
+              1,
+            ),
+            i(
+              "v-uni-view",
+              { staticClass: "settings-group" },
+              [
+                i(
+                  "v-uni-view",
+                  { staticClass: "settings-row no-border version-row" },
+                  [
+                    i("v-uni-view", { staticClass: "settings-left" }, [
+                      t._v("版本号"),
+                    ]),
+                    i(
+                      "v-uni-view",
+                      { staticClass: "settings-right" },
+                      [
+                        i("v-uni-text", { staticClass: "version-text" }, [
+                          t._v("v" + t._s(t.versionName)),
+                        ]),
+                      ],
+                      1,
+                    ),
+                  ],
+                  1,
+                ),
+              ],
+              1,
+            ),
+            i(
+              "v-uni-view",
+              { staticClass: "settings-group" },
+              [
+                i(
+                  "v-uni-view",
+                  {
+                    staticClass: "settings-row no-border logout-row",
+                    on: {
+                      click: function (n) {
+                        ((arguments[0] = n = t.$handleEvent(n)),
+                          t.outline.apply(void 0, arguments));
+                      },
+                    },
+                  },
+                  [
+                    i("v-uni-text", { staticClass: "logout-text" }, [
+                      t._v("退出账号"),
+                    ]),
+                  ],
+                  1,
+                ),
+              ],
+              1,
+            ),
+            i("shopro-login-modal", {
+              attrs: { showLogin: t.showLogin },
+              on: {
+                loginhidden: function (n) {
+                  ((arguments[0] = n = t.$handleEvent(n)),
+                    t.loginhidden.apply(void 0, arguments));
+                },
+              },
+            }),
+          ],
+          1,
+        );
+      },
+      a = [];
+  },
+  "565b": function (t, n, i) {
+    var e = i("9582");
+    ("string" === typeof e && (e = [[t.i, e, ""]]),
+      e.locals && (t.exports = e.locals));
+    var s = i("4f06").default;
+    s("cd4b7630", e, !0, { sourceMap: !1, shadowMode: !1 });
+  },
+  "5a61": function (t, n, i) {
+    "use strict";
+    i.r(n);
+    var e = i("1a27"),
+      s = i("c189");
+    for (var a in s)
+      ["default"].indexOf(a) < 0 &&
+        (function (t) {
+          i.d(n, t, function () {
+            return s[t];
+          });
+        })(a);
+    i("ba6d");
+    var o,
+      r = i("f0c5"),
+      c = Object(r["a"])(
+        s["default"],
+        e["b"],
+        e["c"],
+        !1,
+        null,
+        "bcd4737c",
+        null,
+        !1,
+        e["a"],
+        o,
+      );
+    n["default"] = c.exports;
+  },
+  9582: function (t, n, i) {
+    var e = i("24fb");
+    ((n = e(!1)),
+      n.push([
+        t.i,
+        '@charset "UTF-8";\n/**\n * 这里是uni-app内置的常用样式变量\n *\n * uni-app 官方扩展插件及插件市场（https://ext.dcloud.net.cn）上很多三方插件均使用了这些样式变量\n * 如果你是插件开发者，建议你使用scss预处理，并在插件代码中直接使用这些变量（无需 import 这个文件），方便用户通过搭积木的方式开发整体风格一致的App\n *\n */\n/**\n * 如果你是App开发者（插件使用者），你可以通过修改这些变量来定制自己的插件主题，实现自定义主题功能\n *\n * 如果你的项目同样使用了scss预处理，你也可以直接在你的 scss 代码中使用如下变量，同时无需 import 这个文件\n */\n/* 颜色变量 */\n/* 行为相关颜色 */\n/* 文字基本颜色 */\n/* 背景颜色 */\n/* 边框颜色 */\n/* 尺寸变量 */\n/* 文字尺寸 */\n/* 图片尺寸 */\n/* Border Radius */\n/* 水平间距 */\n/* 垂直间距 */\n/* 透明度 */\n/* 文章场景相关 */.settings-page[data-v-bcd4737c]{min-height:100%;background:#f5f5f5;padding-bottom:%?40?%}.settings-page .settings-group[data-v-bcd4737c]{margin-top:%?20?%;background:#fff}.settings-page .settings-row[data-v-bcd4737c]{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-box-align:center;-webkit-align-items:center;align-items:center;margin:0 %?30?%;height:%?109?%;border-bottom:%?2?% solid #eee}.settings-page .settings-row.no-border[data-v-bcd4737c]{border-bottom:none}.settings-page .settings-left[data-v-bcd4737c]{font-size:%?30?%;color:#333}.settings-page .settings-right[data-v-bcd4737c]{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center}.settings-page .settings-right .arrow[data-v-bcd4737c]{position:relative;top:%?2?%}.settings-page .version-row .version-text[data-v-bcd4737c]{font-size:%?28?%;color:#999}.settings-page .logout-row[data-v-bcd4737c]{-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center}.settings-page .logout-row .logout-text[data-v-bcd4737c]{font-size:%?30?%;color:#e54d42}',
+        "",
+      ]),
+      (t.exports = n));
+  },
+  a3bd: function (t, n, i) {
+    "use strict";
+    var e = i("4ea4");
+    (Object.defineProperty(n, "__esModule", { value: !0 }),
+      (n.default = void 0));
+    var s = e(i("2ba4"));
+    n.default = {
+      components: { uniIcons: s.default },
+      data: function () {
+        return { showLogin: !1, versionName: "1.1.0", logoutPending: !1 };
+      },
+      onShow: function () {
+        this.checkLogin();
+      },
+      methods: {
+        checkLogin: function () {
+          var t = this;
+          this.request("/member/getMemberDetails").then(function (n) {
+            -500 == n.data.code && (t.showLogin = !0);
+          });
+        },
+        loginhidden: function (t) {
+          this.showLogin = t;
+        },
+        outline: function () {
+          if (typeof window !== 'undefined' && window.__H5_SERVER_MODE__ === 'ruoyi') {
+            if (this.logoutPending) return;
+            this.logoutPending = !0;
+            var t = this;
+            return this.request('/member/logout', {}, 'POST').then(function (r) {
+              if (r.data.code !== 1) { t.$tip(r.data.msg || '退出未完成，请重试'); return; }
+              uni.removeStorageSync('TOKEN'); uni.reLaunch({url:'/pages/login/login'});
+            }).catch(function () { t.$tip('退出未确认，请重试'); }).finally(function () { t.logoutPending = !1; });
+          }
+          (uni.removeStorageSync("TOKEN"),
+            uni.reLaunch({ url: "/pages/login/login" }));
+        },
+        toPage: function (t) {
+          uni.navigateTo({ url: t });
+        },
+        toAgreement: function (t) {
+          uni.navigateTo({ url: "/pages/personal/agreement?type=" + t });
+        },
+      },
+    };
+  },
+  ba6d: function (t, n, i) {
+    "use strict";
+    var e = i("565b"),
+      s = i.n(e);
+    s.a;
+  },
+  c189: function (t, n, i) {
+    "use strict";
+    i.r(n);
+    var e = i("a3bd"),
+      s = i.n(e);
+    for (var a in e)
+      ["default"].indexOf(a) < 0 &&
+        (function (t) {
+          i.d(n, t, function () {
+            return e[t];
+          });
+        })(a);
+    n["default"] = s.a;
+  },
+};

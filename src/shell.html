@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#e76f64">
+    <title>鑫芮商贸</title>
+    <script>
+      window.addEventListener('error', function (event) {
+        var target = event.target;
+        if (!target || !/^(SCRIPT|LINK)$/.test(target.tagName)) return;
+        function showFailure() {
+          var note = document.getElementById('deployment-error');
+          if (!note) {
+            note = document.createElement('div');
+            note.id = 'deployment-error';
+            note.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#fff;padding:28px;font:16px/1.8 sans-serif;overflow:auto;color:#333;white-space:pre-wrap;word-break:break-all';
+            document.body.appendChild(note);
+            note.textContent = '页面资源加载失败\n请将完整部署包解压到网站目录，确保 index.html 与 h5 文件夹在同一层级。\n';
+          }
+          note.textContent += '\n未能加载：' + (target.src || target.href);
+        }
+        if (document.body) showFailure();
+        else document.addEventListener('DOMContentLoaded', showFailure);
+      }, true);
+      document.addEventListener('DOMContentLoaded', function () {
+        document.documentElement.style.fontSize = document.documentElement.clientWidth / 20 + 'px';
+      });
+    </script>
+    <link rel="stylesheet" href="/h5/static/index.9ffdaeb8.css">
+  </head>
+  <body>
+    <noscript>请开启 JavaScript 以使用商城。</noscript>
+    <div id="app"></div>
+    <script src="/h5/static/demo/config.js"></script>
+    <script src="/h5/static/demo/runtime.js"></script>
+    <script src="/h5/static/js/chunk-vendors.6be94bb2.js"></script>
+    <script src="/h5/static/js/index.d3f35ec3.js"></script>
+    <script src="/h5/static/demo/bridge.js"></script>
+  </body>
+</html>

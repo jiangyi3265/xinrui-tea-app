@@ -28,6 +28,16 @@
 
 ## 快速启动
 
+### 一键部署（包括新数据库）
+
+服务器已有 Docker Engine/Compose、Git、Bash、OpenSSL 时，在本仓库运行：
+
+```bash
+bash deploy/deploy.sh
+```
+
+自动克隆相邻的 backend/admin 源码，构建并启动真实 MySQL、Redis、Java、私有 Node 引擎及两个 Nginx；首次导入表结构和公开示例商品。默认入口为本机 18000/18001，随机管理员密码在 `.local/deploy/admin-login.txt`。真实业务数据、备份与密钥不会公开上传。完整配置、数据范围和备份操作见 [部署说明](deploy/README.md)。这不代表原商业发布阻塞已经解决。
+
 ### 独立 H5 演示（无真实支付/短信）
 
 ```bash

@@ -1,0 +1,136 @@
+name: xinrui-tea
+
+x-java: &java
+  image: xinrui-tea-backend:local
+  build:
+    context: ${BACKEND_DIR:-../../RuoYi-Vue}
+  environment: &java-env
+    DB_URL: jdbc:mysql://mysql:3306/tea?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    DB_USERNAME: tea
+    DB_PASSWORD: ${DB_PASSWORD:?Run deploy.sh to generate local credentials}
+    JWT_SECRET: ${JWT_SECRET:?Missing JWT secret}
+    TEA_ENGINE_SECRET: ${TEA_ENGINE_SECRET:?Missing engine secret}
+    TEA_ENGINE_URL: http://engine:8091/execute
+    TEA_BIND_ADDRESS: 0.0.0.0
+    TEA_REDIS_DATABASE: 0
+    SPRING_REDIS_HOST: redis
+    REDIS_PASSWORD: ${REDIS_PASSWORD:?Missing Redis password}
+    TZ: Asia/Shanghai
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: tea
+      MYSQL_USER: tea
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Missing database password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Missing root password}
+      TZ: Asia/Shanghai
+    volumes: [mysql-data:/var/lib/mysql]
+    networks: [data]
+    healthcheck:
+      test: [CMD-SHELL, 'MYSQL_PWD="$$MYSQL_PASSWORD" mysql --protocol=TCP -h127.0.0.1 -utea tea -e "SELECT 1" >/dev/null']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Missing Redis password}
+      REDISCLI_AUTH: ${REDIS_PASSWORD:?Missing Redis password}
+    command: [sh, -c, 'exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"']
+    volumes: [redis-data:/data]
+    networks: [data]
+    healthcheck:
+      test: [CMD-SHELL, 'redis-cli ping | grep -q PONG']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  init:
+    <<: *java
+    restart: "no"
+    environment:
+      <<: *java-env
+      TEA_ADMIN_PASSWORD: ${TEA_ADMIN_PASSWORD:?Missing generated administrator password}
+      TEA_SEED_MODE: ${TEA_SEED_MODE:-sample}
+    command: [java, -cp, '/app/classes:/app/lib/*', com.ruoyi.web.tea.DeploymentInitializer]
+    networks: [data]
+    depends_on:
+      mysql: {condition: service_healthy}
+
+  engine:
+    build:
+      context: ..
+      dockerfile: deploy/engine.Dockerfile
+    restart: unless-stopped
+    environment:
+      TEA_ENGINE_SECRET: ${TEA_ENGINE_SECRET:?Missing engine secret}
+      TEA_ENGINE_BIND_ADDRESS: 0.0.0.0
+    networks: [data]
+    healthcheck:
+      test: [CMD, node, -e, 'require("net").connect(8091,"127.0.0.1",function(){this.end();process.exit(0)}).on("error",()=>process.exit(1))']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    <<: *java
+    restart: unless-stopped
+    networks: [data, web]
+    volumes: [uploads:/data/uploads, java-logs:/data/logs]
+    depends_on:
+      init: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+      engine: {condition: service_healthy}
+    healthcheck:
+      test: [CMD-SHELL, 'curl -fsS http://127.0.0.1:8080/app/index/getStoreInfo | grep -Eq ''"code"[[:space:]]*:[[:space:]]*1''']
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+
+  storefront:
+    build:
+      context: ..
+      dockerfile: deploy/storefront.Dockerfile
+    restart: unless-stopped
+    environment: {API_UPSTREAM: 'http://backend:8080'}
+    ports: ['${WEB_BIND_ADDRESS:-127.0.0.1}:${H5_PORT:-18000}:80']
+    networks: [web]
+    depends_on:
+      backend: {condition: service_healthy}
+    healthcheck:
+      test: [CMD-SHELL, 'wget -qO- http://127.0.0.1/health | grep -q ok']
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  admin:
+    build:
+      context: ${ADMIN_DIR:-../../RuoYi-Vue3}
+    restart: unless-stopped
+    environment: {API_UPSTREAM: 'http://backend:8080', H5_UPSTREAM: 'http://storefront'}
+    ports: ['${WEB_BIND_ADDRESS:-127.0.0.1}:${ADMIN_PORT:-18001}:80']
+    networks: [web]
+    depends_on:
+      backend: {condition: service_healthy}
+      storefront: {condition: service_healthy}
+    healthcheck:
+      test: [CMD-SHELL, 'wget -qO- http://127.0.0.1/health | grep -q ok']
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+networks:
+  data: {internal: true}
+  web: {}
+volumes:
+  mysql-data: {}
+  redis-data: {}
+  uploads: {}
+  java-logs: {}

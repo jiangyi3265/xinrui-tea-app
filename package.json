@@ -14,6 +14,8 @@
     "local:shared": "node scripts/shared-stack.mjs",
     "verify:shared": "node scripts/verify-shared.mjs",
     "verify:nonpay": "node scripts/verify-shared.mjs --release --exclude-payment",
+    "test:deploy": "node --test deploy/tests/*.test.mjs",
+    "verify:deploy:local": "node scripts/verify-deployment.mjs",
     "build:release": "TEA_RELEASE_BUILD=1 node scripts/build.mjs",
     "build:h5": "node scripts/build.mjs",
     "preview": "node scripts/preview.mjs",

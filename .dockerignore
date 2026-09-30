@@ -1,0 +1,16 @@
+.git
+node_modules
+dist
+dist.zip
+unpackage
+.local
+.env*
+.idea
+.vscode
+**/*.log
+**/*.pem
+**/*.key
+**/*.p12
+**/*.jks
+backups
+uploads

@@ -26,4 +26,4 @@ http.createServer(async (req, res) => {
     console.error('Business execution failed:', error.name);
     reply(500, { error: 'Business execution failed; no state committed' });
   }
-}).listen(Number(process.env.TEA_ENGINE_PORT || 8091), '127.0.0.1', () => console.log('Private tea engine listening on loopback'));
+}).listen(Number(process.env.TEA_ENGINE_PORT || 8091), process.env.TEA_ENGINE_BIND_ADDRESS || '127.0.0.1', () => console.log('Private tea engine listening (authenticated internal service)'));

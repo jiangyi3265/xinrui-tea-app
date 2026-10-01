@@ -116,6 +116,8 @@ export default {
                       ],
                       1,
                     ),
+                    "1" == e.register_verify
+                      ? [
                     t("v-uni-view", { staticClass: "login-line" }),
                     t(
                       "v-uni-view",
@@ -156,7 +158,9 @@ export default {
                         ),
                       ],
                       1,
-                    ),
+                    )
+                        ]
+                      : e._e(),
                     t("v-uni-view", { staticClass: "login-line" }),
                     t(
                       "v-uni-view",
@@ -534,7 +538,7 @@ export default {
         n["a"],
         s,
       );
-    i["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("register") : c.exports;
+    i["default"] = c.exports;
   },
   "4ae3": function (e, i, t) {
     var n = t("b8a2");

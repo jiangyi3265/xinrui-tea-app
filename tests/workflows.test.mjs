@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import {createMemoryStore} from '../server/store.mjs';
 import {sharedAdmin,sharedH5} from '../server/shared-api.mjs';
 import {defaults} from '../server/workflows.mjs';
+import {clock} from '../server/schedule.mjs';
+// Business clock helper: Asia/Shanghai wall-clock time, e.g. at('09:31') is inside the default grab window.
+const at=(hm,day='2026-10-02')=>{clock.now=()=>Date.parse(day+'T'+hm+':00+08:00');};
 function setup(){
  const state={users:[],sessions:{},nextId:100,catalog:[],auctions:[],auctionBids:[],adminNotices:[],content:{}};
  const store=createMemoryStore(state,()=>{},'shared');
@@ -11,7 +14,8 @@ function setup(){
  for(let i=0;i<3;i++)assert.equal(admin('/members',{phone:'1990000000'+i,nickName:'隔离测试'+i,password:'test-password',payPassword:'246810',invitationCode:i?state.users[i-1].invitation_code:''},'POST').code,200);
  const tokens=state.users.map(u=>h5('/member/accountLogin',{phone:u.phone,password:'test-password'}).data.token);
  // Explicit synthetic balances exist only inside this isolated in-memory fixture.
- for(const u of state.users)u.amount='1000.00';
+ for(const u of state.users){u.amount='1000.00';u.e_card_number='1000.00';u.certification={status:'已通过',name:'测试',lastFour:'1234'};}
+ at('09:31');
  return {store,state,admin,h5,tokens,users:state.users};
 }
 test('withdrawals freeze once, reject once, approve without paying, require unique payout evidence',()=>{
@@ -52,17 +56,19 @@ test('commission snapshots two actual referral levels, settles only at receipt a
 test('consignment conserves balance and stock, concurrent repeat purchase cannot transfer twice; pickup waits for shipment',()=>{
  const {h5,admin,tokens,users}=setup();const seller=users[0],buyer=users[1];
  const product=admin('/products',{goods_name:'寄卖验收茶',price:100,stock:4},'POST').data;
- const order=h5('/order/toAddOrder',{goods_id:product.goods_id},tokens[0]).data.order_id;
+ const order=h5('/order/toAddOrder',{goods_id:product.goods_id},tokens[0]).data.order_id;assert.equal(seller.e_card_number,'998.00');
  assert.equal(h5('/warehouse/pay',{order_id:order,pay_password:'246810'},tokens[0]).code,1);
  assert.equal(seller.amount,'900.00');assert.equal(h5('/warehouse/pay',{order_id:order,pay_password:'246810'},tokens[0]).code,1);assert.equal(seller.amount,'900.00');
  assert.equal(h5('/order/toSplitOrder',{order_id:order,quantity:1},tokens[0]).code,0);
+ at('15:00');
  assert.equal(h5('/warehouse/listing',{order_id:order,sale_price:120,pay_password:'wrong'},tokens[0]).code,0);
  assert.equal(h5('/warehouse/listing',{order_id:order,sale_price:120,pay_password:'246810'},tokens[0]).code,1);
+ at('09:31','2026-10-03');
  assert.equal(h5('/market/buy',{order_id:order,request_id:'self-purchase',pay_password:'246810'},tokens[0]).code,0);
  const bought=h5('/market/buy',{order_id:order,request_id:'market-purchase',pay_password:'246810'},tokens[1]);assert.equal(bought.code,1);
  assert.equal(h5('/market/buy',{order_id:order,request_id:'market-purchase'},tokens[1]).code,1);
  assert.equal(h5('/market/buy',{order_id:order,request_id:'competing-buy',pay_password:'246810'},tokens[2]).code,0);
- assert.equal(seller.amount,'1020.00');assert.equal(buyer.amount,'880.00');assert.equal(buyer.warehouse.length,1);assert.equal(h5('/market/list').data.length,0);
+ assert.equal(seller.amount,'900.00');assert.equal(buyer.amount,'1000.00','member-to-member money is settled offline, not moved in the system');assert.equal(buyer.e_card_number,'997.60');assert.equal(seller.score,'1.20');assert.equal(buyer.warehouse.length,1);assert.equal(h5('/market/list').data.length,0);
  const item=buyer.warehouse[0];buyer.addresses.push({address_id:567,name:'验收',phone:buyer.phone,detail:'隔离地址'});
  assert.equal(h5('/warehouse/delivery',{order_id:item.order_id,address_id:888},tokens[1]).code,0);
  const pickup=h5('/warehouse/delivery',{order_id:item.order_id,address_id:567},tokens[1]);assert.equal(pickup.code,1);
@@ -88,7 +94,7 @@ test('reservations are free and idempotent and generate only in-app notification
  assert.equal(h5('/member/readNotification',{id:users[0].notifications[0].id},tokens[1]).code,0);
 });
 test('manual identity is pending until explicit review; password changes revoke sessions and authorizations',()=>{
- const {h5,admin,tokens,users}=setup();const t=tokens[0];
+ const {h5,admin,tokens,users}=setup();const t=tokens[0];delete users[0].certification;
  assert.equal(h5('/certification/addRealName',{certification_name:'验收会员',id_last_four:'123X'},t).code,1);
  assert.equal(h5('/certification/getIsRealName',{},t).code,0);
  assert.equal(admin('/members/'+users[0].member_id,{action:'verify',remark:'仅隔离验收线下核验记录'},'PUT').code,200);

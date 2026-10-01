@@ -135,8 +135,8 @@ export default {
                 if (this.needMorePay)
                   this.$tip(
                     this.amountDeductOpen
-                      ? "优惠券与余额合计不足，请先充值后再寄售"
-                      : "优惠券不足，请先充值后再寄售",
+                      ? "燃料费与余额合计不足，请先充值后再寄售"
+                      : "燃料费不足，请先充值后再寄售",
                   );
                 else {
                   var n = {
@@ -158,7 +158,7 @@ export default {
                               uni.switchTab({ url: "/pages/order/order" });
                             }, 1e3))
                           : e.$tip(
-                              t.data.msg || "余额/优惠券不足，请先充值后再寄售",
+                              t.data.msg || "余额/燃料费不足，请先充值后再寄售",
                             );
                       })
                       .finally(function () {
@@ -169,7 +169,7 @@ export default {
                 this.$tip(
                   this.amountDeductOpen
                     ? "请至少选择一种抵扣方式"
-                    : "请勾选优惠券抵扣",
+                    : "请勾选燃料费抵扣",
                 );
             } else this.$tip("订单信息异常");
           }
@@ -355,7 +355,7 @@ export default {
                           },
                           [e._v(e._s(e.useCoupon ? "✓" : ""))],
                         ),
-                        i("v-uni-text", [e._v("优惠券抵扣")]),
+                        i("v-uni-text", [e._v("燃料费抵扣")]),
                       ],
                       1,
                     ),
@@ -406,7 +406,7 @@ export default {
                       "v-uni-view",
                       { staticClass: "form-row" },
                       [
-                        i("v-uni-text", [e._v("优惠券本次抵扣")]),
+                        i("v-uni-text", [e._v("燃料费本次抵扣")]),
                         i("v-uni-text", { staticClass: "fee-amount" }, [
                           e._v("¥ " + e._s(e.formatMoney(e.couponDeduct))),
                         ]),
@@ -443,8 +443,8 @@ export default {
                       e._v(
                         e._s(
                           e.amountDeductOpen
-                            ? "请勾选优惠券/余额，合计需覆盖手续费"
-                            : "请勾选优惠券，需覆盖手续费",
+                            ? "请勾选燃料费/余额，合计需覆盖手续费"
+                            : "请勾选燃料费，需覆盖手续费",
                         ),
                       ),
                     ])
@@ -494,8 +494,8 @@ export default {
                   e._v(
                     e._s(
                       e.amountDeductOpen
-                        ? "可同时勾选优惠券与余额共同抵扣。"
-                        : "可勾选优惠券抵扣手续费。",
+                        ? "可同时勾选燃料费与余额共同抵扣。"
+                        : "可勾选燃料费抵扣手续费。",
                     ),
                   ),
                 ]),

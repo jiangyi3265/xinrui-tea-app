@@ -126,7 +126,8 @@ export async function integration(config) {
     for(let i=0;i<5;i++) assert.equal((await m('/member/editPwd',{old_password:'wrong',password:'ignored-2026',real_pwd:'ignored-2026'},'POST',h5,fresh)).code,0);
     const locked=await m('/member/editPwd',{old_password:'local-changed-2026',password:'ignored-2026',real_pwd:'ignored-2026'},'POST',second,fresh);
     assert.equal(locked.code,0); assert.match(locked.msg,/十分钟/);
-    for(const route of ['/member/registerAnAccount','/v1/sms']) { const blocked=await m(route,{},'POST',h5,'');assert.equal(blocked.code,0);assert.match(blocked.msg,/短信.*未配置/); }
+    const sms=await m('/v1/sms',{},'POST',h5,'');assert.equal(sms.code,0);assert.match(sms.msg,/无需短信/);
+    const invalidSignup=await m('/member/registerAnAccount',{},'POST',h5,'');assert.equal(invalidSignup.code,0);
   });
   await check('INT-03','商品 CRUD、两入口实时数据及失败事务回滚',async()=>{
     product=good(await request(java,'/admin/tea/products',{goods_name:'三端联调茶品',goods_min_price:50,stock:20,approvalStatus:10},{admin:roles.tea_operator}),200);
@@ -233,8 +234,8 @@ export async function integration(config) {
       assert.equal((await m('/goods/getLootDetails',{goods_id:product.goods_id,auction_id:999999})).code,0);
       assert.equal((await m('/auction/detail',{goods_id:product.goods_id,auction_id:999999})).code,0);
       assert.equal((await m('/auction/bid',{goods_id:product.goods_id,auction_id:999999,amount:90})).code,0);
-      assert.equal(good(await m('/index/getSubscribeSetting'),1).is_open,0);
-      assert.equal((await m('/order/subscribe',{specialarea_id:auction.auctionId})).code,0);
+      assert.equal(good(await m('/index/getSubscribeSetting'),1).is_open,1);
+      assert.equal((await m('/order/subscribe',{specialarea_id:999999})).code,0);
       assert.equal(database(config,'SELECT revision FROM tea_business_state WHERE id=1;'),revision);
     });
     const bids=await Promise.all([m('/auction/bid',{auction_id:auction.auctionId,amount:90}),m('/auction/bid',{auction_id:auction.auctionId,amount:90},'POST',second,other)]);
@@ -284,12 +285,22 @@ export async function integration(config) {
     good(await a('/recharges/'+rejected,{action:'reject',remark:'未核实到账'},'PUT'),200);
     assert.equal(Number(dbState().users[0].score),before+55);
   });
-  await check('INT-08','寄卖服务费待审、后台通过后更新卖方仓库',async()=>{
-    const result=good(await m('/order/toServiceChargeWithVoucher',{order_id:warehouse,use_amount:0,use_coupon:0},'POST',h5,config.winnerToken),1);
-    good(await m('/order/uploadListingFeeVoucher',{voucher_id:result.voucher_id,voucher_image:good(await upload(4,config.winnerToken),1).file_path},'POST',h5,config.winnerToken),1);
-    assert.equal(dbState().users.find(u=>u.member_id===config.winnerId).listingFees.find(x=>x.voucher_id===result.voucher_id).status,1);
-    good(await a('/fees/'+result.voucher_id,{action:'approve'},'PUT'),200);
-    assert.equal(dbState().users.find(u=>u.member_id===config.winnerId).warehouse.find(x=>x.order_id===warehouse).pay_status,'寄卖中');
+  await check('INT-08','寄售仅限寄售时段、默认上浮 3% 价格直接上架且失败无写入',async()=>{
+    const nowMinutes=(()=>{const [h,min]=new Date(Date.now()+8*3600000).toISOString().slice(11,16).split(':').map(Number);return h*60+min;})();
+    const hm=value=>String(Math.floor(value/60)).padStart(2,'0')+':'+String(value%60).padStart(2,'0');
+    // A one-hour window that does not contain the current Beijing time.
+    const closedStart=nowMinutes<1200?nowMinutes+60:nowMinutes-120;
+    good(await a('/content/business',{value:{consignStart:hm(closedStart),consignEnd:hm(closedStart+60)}},'PUT'),200);
+    const revision=database(config,'SELECT revision FROM tea_business_state WHERE id=1;');
+    const closed=await m('/order/toServiceChargeWithVoucher',{order_id:warehouse,use_amount:0,use_coupon:0},'POST',h5,config.winnerToken);
+    assert.equal(closed.code,0); assert.match(closed.msg,/寄售时间/);
+    assert.equal(database(config,'SELECT revision FROM tea_business_state WHERE id=1;'),revision);
+    good(await a('/content/business',{value:{consignStart:'00:00',consignEnd:'23:59'}},'PUT'),200);
+    const item=()=>dbState().users.find(u=>u.member_id===config.winnerId).warehouse.find(x=>x.order_id===warehouse);
+    const paid=Number(item().pay_price);
+    good(await m('/order/toServiceChargeWithVoucher',{order_id:warehouse,use_amount:0,use_coupon:0},'POST',h5,config.winnerToken),1);
+    assert.equal(item().pay_status,'寄卖中');
+    assert.equal(item().sale_price,(Math.floor(paid*103+1e-6)/100).toFixed(2));
   });
   await check('INT-09','公告与商城内容后台修改、H5重读、脚本内容拦截',async()=>{
     const notice=good(await request(java,'/admin/tea/notices',{noticeTitle:'三端公告验收',noticeContent:'已从若依保存至 MySQL',status:'0'},{admin:roles.tea_content}),200);
@@ -396,6 +407,121 @@ export async function integration(config) {
     assert.equal(limited.code,0); assert.match(limited.msg,/十分钟/);
     const freshToken=good(await m('/member/accountLogin',{phone:'13800138001',password:'tea-local-2026'}),1).token;
     assert.match((await m('/member/verificationPayPassword',{pwd:'246810'},'POST',second,freshToken)).msg,/十分钟/);
+  });
+  await check('INT-26','自助注册、抢购时段/限单/燃料费/利润、暂停账号、收款管理、对账报表与权限（真实 Java + MySQL）',async()=>{
+    const PAY='246810', PASSWORD='local-password-2026';
+    const rules=value=>a('/content/business',{value},'PUT');
+    const revision=()=>database(config,'SELECT revision FROM tea_business_state WHERE id=1;');
+    const user=id=>dbState().users.find(x=>x.member_id===id);
+    const cstMinutes=()=>{const [h,min]=new Date(Date.now()+8*3600000).toISOString().slice(11,16).split(':').map(Number);return h*60+min;};
+    const hm=value=>String(Math.floor(value/60)).padStart(2,'0')+':'+String(value%60).padStart(2,'0');
+    good(await rules({grabStart:'00:00',grabEnd:'23:59',consignStart:'00:00',consignEnd:'23:59',grabLimit:2,registerDailyLimit:300}),200);
+    // 1. Self-registration through Java: no SMS, public inviter lookup, bad input rejected, state committed to MySQL.
+    const inviter=good(await a('/members',{phone:'13900001001',nickName:'上家验收',password:PASSWORD,payPassword:PAY}),200);
+    const inviterCode=user(inviter.memberId).invitation_code;
+    assert.equal(good(await m('/index/getStoreInfo',undefined,'GET',h5,''),1).register_verify,'0');
+    assert.equal(good(await m('/member/getInvitationCode?member_id='+inviter.memberId,undefined,'GET',h5,''),1),inviterCode);
+    for(const bad of [{mobile:'13900001002',password:'short'},{mobile:'13900001002',password:PASSWORD,invi_code:'NOPE'},{mobile:'139',password:PASSWORD}]) assert.equal((await m('/member/registerAnAccount',bad,'POST',h5,'')).code,0);
+    const before=Number(revision());
+    const signup=good(await m('/member/registerAnAccount',{mobile:'13900001002',nickname:'自助注册会员',password:PASSWORD,rest_password:PASSWORD,invi_code:inviterCode},'POST',h5,''),1);
+    assert.ok(signup.token); assert.ok(Number(revision())>before);
+    const member=dbState().users.find(x=>x.phone==='13900001002'), S=member.member_id;
+    assert.equal(member.parentId,inviter.memberId); assert.equal(member.amount,'0.00'); assert.equal(member.e_card_number,'0.00'); assert.equal(member.score,'0.00');
+    assert.equal((await m('/member/registerAnAccount',{mobile:'13900001002',password:PASSWORD},'POST',h5,'')).code,0);
+    assert.equal(good(await m('/member/getMemberDetails',undefined,'GET',h5,signup.token),1).phone,'13900001002');
+    good(await m('/member/changePayPassword',{password:PASSWORD,pay_password:PAY},'POST',h5,signup.token),1);
+    // 2. Registration cap is configurable and 0 closes it.
+    good(await rules({registerDailyLimit:0}),200);
+    assert.match((await m('/member/registerAnAccount',{mobile:'13900001009',password:PASSWORD},'POST',h5,'')).msg,/暂未开放/);
+    good(await rules({registerDailyLimit:300}),200);
+    // 3. Grab needs an approved identity, then fuel; both come from the real admin endpoints.
+    const product=good(await a('/products',{goods_name:'抢购联调茶',price:1000,stock:10}),200);
+    const grab=(tk,body={goods_id:product.goods_id})=>m('/order/toAddOrder',body,'POST',h5,tk);
+    let denied=await grab(signup.token); assert.equal(denied.code,0); assert.match(denied.msg,/请提交身份资料供人工核验/);
+    good(await m('/certification/addRealName',{certification_name:'自助会员',id_last_four:'123X'},'POST',h5,signup.token),1);
+    assert.match((await grab(signup.token)).msg,/待人工审核/);
+    good(await a('/members/'+S,{action:'verify',remark:'联调线下核验'},'PUT'),200);
+    denied=await grab(signup.token); assert.equal(denied.code,0); assert.match(denied.msg,/燃料费余额不足/);
+    for(const bad of ['0','-5','12.345','abc','']) assert.notEqual((await a('/members/'+S,{action:'rechargeFuel',amount:bad},'PUT')).code,200);
+    assert.equal(user(S).e_card_number,'0.00');
+    good(await a('/members/'+S,{action:'rechargeFuel',amount:'100.00',remark:'联调线下收款'},'PUT'),200);
+    assert.equal(user(S).e_card_number,'100.00');
+    // 4. Two grabs per day, 2% fuel each; cancelling refunds and frees one slot.
+    const first=good(await grab(signup.token),1).order_id, second1=good(await grab(signup.token),1).order_id;
+    const limited=await grab(signup.token); assert.equal(limited.code,0); assert.equal(limited.msg,'每人每次只能抢两单');
+    assert.equal(user(S).e_card_number,'60.00');
+    good(await m('/order/cancel_grab',{order_id:second1},'POST',h5,signup.token),1);
+    assert.equal(user(S).e_card_number,'80.00');
+    good(await grab(signup.token),1);
+    assert.equal(user(S).e_card_number,'60.00');
+    // 5. Windows come from the configuration endpoint: invalid schedules rejected, closed window blocks without writing.
+    assert.notEqual((await rules({grabStart:'9:30'})).code,200);
+    assert.notEqual((await rules({grabStart:'10:00',grabEnd:'09:00'})).code,200);
+    const closedStart=cstMinutes()<1200?cstMinutes()+60:cstMinutes()-120;
+    good(await rules({grabStart:hm(closedStart),grabEnd:hm(closedStart+5)}),200);
+    assert.equal(good(await m('/goods/getLootList',undefined,'GET',h5,signup.token),1).list[0].time_list.time.start_end_time,hm(closedStart));
+    const frozen=revision(); denied=await grab(signup.token); assert.equal(denied.code,0); assert.match(denied.msg,/抢购/);
+    assert.equal(revision(),frozen);
+    good(await rules({grabStart:'00:00',grabEnd:'23:59'}),200);
+    // 6. Seller consigns at +3%; a second verified member grabs it: fuel 2% from the buyer, 1% profit to the seller, no balance moves.
+    const voucher=good(await upload(61,signup.token),1).file_path;
+    good(await a('/recharges/'+good(await m('/recharge/toOrder',{asset:'amount',custom_price:2000,pay_image:voucher},'POST',h5,signup.token),1),{action:'approve'},'PUT'),200);
+    good(await m('/warehouse/pay',{order_id:first,pay_password:PAY},'POST',h5,signup.token),1);
+    assert.equal(user(S).amount,'1000.00');
+    good(await m('/warehouse/listing',{order_id:first},'POST',h5,signup.token),1);
+    assert.equal(user(S).warehouse.find(x=>x.order_id===first).sale_price,'1030.00');
+    const buyerMember=good(await a('/members',{phone:'13900001003',nickName:'买方联调',password:PASSWORD,payPassword:PAY}),200), B=buyerMember.memberId;
+    const buyerToken=good(await m('/member/accountLogin',{phone:'13900001003',password:PASSWORD},'POST',h5,''),1).token;
+    good(await m('/certification/addRealName',{certification_name:'买方联调',id_last_four:'4567'},'POST',h5,buyerToken),1);
+    good(await a('/members/'+B,{action:'verify',remark:'联调线下核验'},'PUT'),200);
+    good(await a('/members/'+B,{action:'rechargeFuel',amount:'100.00'},'PUT'),200);
+    assert.equal(good(await m('/goods/getPurchaseNum',{order_id:first,goods_id:product.goods_id},'POST',h5,buyerToken),1).source,'consignment');
+    const pool=good(await m('/loodgoods/getCategoryGoodsList',{specialarea_id:'grab'},'POST',h5,buyerToken),1).list.data;
+    assert.ok(pool.some(x=>x.order_id===first&&x.goods_price==='1030.00'));
+    const bought=good(await grab(buyerToken,{order_id:first,goods_id:product.goods_id}),1);
+    assert.equal(user(B).e_card_number,'79.40'); assert.equal(user(S).score,'10.30'); assert.equal(user(S).profits[0].amount,'10.30');
+    assert.equal(user(S).warehouse.find(x=>x.order_id===first).pay_status,'已售出');
+    assert.equal(user(B).warehouse.find(x=>x.order_id===bought.order_id).pay_price,'1030.00');
+    assert.equal(user(S).amount,'1000.00'); assert.equal(user(B).amount,'0.00');
+    assert.equal(good(await m('/member/getMemberDetails',undefined,'GET',h5,buyerToken),1).e_card_number,'79.40');
+    // 7. Buyer's one-click consignment (+3% again) and the administrator's one-click for everyone else.
+    assert.equal(good(await m('/warehouse/consignAll',{},'POST',h5,buyerToken),1).count,1);
+    assert.equal(user(B).warehouse.find(x=>x.order_id===bought.order_id).sale_price,'1060.90');
+    const everyone=good(await a('/warehouse/consign-all',{},'PUT'),200);
+    assert.ok(Number.isInteger(everyone.items) && Array.isArray(everyone.skipped));
+    // 8. Daily statement: diff = sell - buy, actual = diff - 2% of buy.
+    const today=new Date(Date.now()+8*3600000).toISOString().slice(0,10);
+    const report=good(await a('/ledger?view=statement&date='+today),200);
+    const rowS=report.rows.find(x=>x.memberId===S), rowB=report.rows.find(x=>x.memberId===B);
+    assert.deepEqual([rowS.buy,rowS.sell,rowS.diff,rowS.fuel,rowS.actual],[2000,1030,-970,40,-1010]);
+    assert.deepEqual([rowB.buy,rowB.sell,rowB.diff,rowB.fuel,rowB.actual],[1030,0,-1030,20.6,-1050.6]);
+    assert.equal(report.totals.actual,Math.round((report.rows.reduce((sum,r)=>sum+Math.round(r.actual*100),0)))/100);
+    // 9. Pause kills sessions at once; resume restores login.
+    good(await a('/members/'+S,{action:'pause',remark:'联调暂停'},'PUT'),200);
+    assert.equal((await m('/member/getMemberDetails',undefined,'GET',h5,signup.token)).code,-500);
+    const paused=await m('/member/accountLogin',{phone:'13900001002',password:PASSWORD},'POST',h5,''); assert.equal(paused.code,0); assert.match(paused.msg,/暂停使用/);
+    assert.equal((await m('/member/getInvitationCode?member_id='+S,undefined,'GET',h5,'')).code,0);
+    good(await a('/members/'+S,{action:'resume'},'PUT'),200);
+    const sellerToken=good(await m('/member/accountLogin',{phone:'13900001002',password:PASSWORD},'POST',h5,''),1).token;
+    // 10. Receiving accounts: bank, WeChat and Alipay behind the transaction password; QR images must be the member's own real uploads.
+    const bank={bank:'工商银行',bank_name:'自助会员',bank_card:'6222000011112222',mobile:'13900001002'};
+    assert.equal((await m('/member/setPay',{...bank},'POST',h5,sellerToken)).code,0);
+    assert.equal((await m('/member/setPay',{...bank,pay_password:'000000'},'POST',h5,sellerToken)).code,0);
+    good(await m('/member/setPay',{...bank,pay_password:PAY},'POST',h5,sellerToken),1);
+    const wxImage=good(await upload(62,sellerToken),1).file_path;
+    assert.equal((await m('/member/setPay',{wx_name:'自助会员',wx_account:'wx-account',wx_image:'data:image/png;base64,AQIDBA==',pay_password:PAY},'POST',h5,sellerToken)).code,0);
+    good(await m('/member/setPay',{wx_name:'自助会员',wx_account:'wx-account',wx_image:wxImage,pay_password:PAY},'POST',h5,sellerToken),1);
+    good(await m('/member/setPay',{zfb_name:'自助会员',zfb_account:'13900001002',zfb_image:good(await upload(63,sellerToken),1).file_path,pay_password:PAY},'POST',h5,sellerToken),1);
+    const info=good(await m('/member/getMemberDetails',undefined,'GET',h5,sellerToken),1).pay_info;
+    assert.equal(info.bank_card,'6222000011112222'); assert.equal(info.wx_account,'wx-account'); assert.equal(info.zfb_account,'13900001002'); assert.equal(info.wx_image,wxImage);
+    assert.equal(user(S).payment.bank,'工商银行');
+    // 11. The new administrator actions use the existing RuoYi permission checks: the read-only role cannot use them.
+    for(const [route,data] of [['/admin/tea/members/'+S,{action:'rechargeFuel',amount:'1.00'}],['/admin/tea/members/'+S,{action:'pause'}],['/admin/tea/warehouse/consign-all',{}]])
+      assert.equal((await request(java,route,data,{admin:viewer},'PUT')).httpStatus,403);
+    assert.equal(user(S).status,'0'); assert.equal(user(S).e_card_number,'60.00');
+    assert.equal((await request(java,'/admin/tea/ledger?view=statement&date='+today,undefined,{admin:viewer})).code,200);
+    // 12. Nothing sensitive leaks through the member list.
+    assert.ok(!JSON.stringify(good(await a('/members'),200)).includes('passwordHash'));
   });
   const snapshot = dbState();
   delete config.winnerToken; delete config.winnerId;

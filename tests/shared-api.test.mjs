@@ -92,7 +92,7 @@ test('shared invalid goods id fails explicitly rather than returning fixture goo
   const {h5}=setup();
   assert.equal(h5('/score/getDetails',{goods_id:999}).code,0);
   assert.equal(h5('/shopgoods/getDetails',{goods_id:999}).code,0);
-  assert.deepEqual(h5('/goods/getLootList').data.list,[]);
+  assert.deepEqual(h5('/goods/getLootList').data.list.filter(x=>x.auction_id!=='grab'),[]);
 });
 test('shared direct fake voucher cannot bypass verified upload ownership',()=>{
   const {h5,token,user}=setup();
@@ -105,7 +105,7 @@ test('shared product listing never creates demo auctions, even with zero invento
     admin('/products',{goods_name:'未开拍茶品',price:20,stock},'POST');
     // Loading an existing catalog before any auction schema marker exists.
     delete store.state.auctionSeedVersion;
-    assert.deepEqual(h5('/goods/getLootList').data.list,[]);
+    assert.deepEqual(h5('/goods/getLootList').data.list.filter(x=>x.auction_id!=='grab'),[]);
     assert.deepEqual(store.state.auctions,[]);
     assert.equal(store.state.catalog[0].spec[0].stock_num,stock);
   }

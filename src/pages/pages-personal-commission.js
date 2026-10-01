@@ -84,7 +84,7 @@ export default {
             t.pay_type ||
             t.title ||
             t.name ||
-            "优惠券记录"
+            "燃料费记录"
           );
         },
         getAmount: function (t) {
@@ -162,7 +162,7 @@ export default {
                         e(
                           "v-uni-view",
                           [
-                            e("v-uni-text", [t._v("优惠券")]),
+                            e("v-uni-text", [t._v("燃料费")]),
                             e("v-uni-text", [
                               t._v(t._s(t.formatMoney(t.amount))),
                             ]),
@@ -184,7 +184,7 @@ export default {
                       { staticClass: "order_t" },
                       [
                         e("v-uni-text", { staticClass: "act" }, [
-                          t._v("优惠券记录"),
+                          t._v("燃料费记录"),
                         ]),
                       ],
                       1,

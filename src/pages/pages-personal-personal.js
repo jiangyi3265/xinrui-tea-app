@@ -357,7 +357,7 @@ export default {
           return e ? String(e) : "";
         },
         balanceText: function () {
-          var e = this.userinfo.amount;
+          var e = this.userinfo.score;
           if (void 0 === e || null === e || "" === e) return "0.00";
           var t = parseFloat(e);
           return isNaN(t) ? String(e) : t.toFixed(2);
@@ -797,7 +797,7 @@ export default {
                         on: {
                           click: function (t) {
                             ((arguments[0] = t = e.$handleEvent(t)),
-                              e.toPage("/pages/personal/balance"));
+                              e.toPage("/pages/integral/income"));
                           },
                         },
                       },
@@ -806,7 +806,7 @@ export default {
                           e._v(e._s(e.balanceText)),
                         ]),
                         i("v-uni-text", { staticClass: "asset-label" }, [
-                          e._v("积分余额"),
+                          e._v("我的利润"),
                         ]),
                         i("v-uni-image", {
                           staticClass: "asset-deco-img",
@@ -833,7 +833,7 @@ export default {
                               e._v(e._s(e.couponCount)),
                             ]),
                             i("v-uni-text", { staticClass: "asset-label" }, [
-                              e._v("优惠券"),
+                              e._v("燃料费余额"),
                             ]),
                             i("v-uni-image", {
                               staticClass: "asset-deco-img",

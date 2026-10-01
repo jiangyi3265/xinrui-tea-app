@@ -1,7 +1,10 @@
 import { ok, fail, money, now, entry, clone, paginate, makeWarehouse, makeOrder, isPublished } from './demo/data.mjs';
 import { passwordMatches, passwordHash } from './store.mjs';
+import { scheduleDefaults, scheduleValid, phase } from './schedule.mjs';
+import { grab, grabGoodsList, consignWindowProblem, defaultSalePrice, consignable, listItem, consignAll, consignEveryone, GRAB_SESSION_ID, grabPool } from './grab.mjs';
+import { rechargeFuel, pauseMember, dailyStatement } from './members.mjs';
 
-export const defaults = { directRate: 0, indirectRate: 0, consignmentFeeRate: 0, withdrawalFeeRate: 0, withdrawalMinimum: 1, levels: [{ name: '普通会员', minimumSpend: 0 }] };
+export const defaults = { directRate: 0, indirectRate: 0, consignmentFeeRate: 0, withdrawalFeeRate: 0, withdrawalMinimum: 1, ...scheduleDefaults, levels: [{ name: '普通会员', minimumSpend: 0 }] };
 const cents = value => Math.round(Number(value) * 100);
 const amountValid = value => /^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(String(value)) && Number(value) > 0 && Number(value) <= 1000000;
 const textValid = (value, max = 120) => typeof value === 'string' && value.trim().length > 0 && value.length <= max && !/[<>\x00-\x1f]/.test(value);
@@ -38,22 +41,28 @@ export function commissionSnapshot(store, user) {
   return [{memberId:parent?.member_id || 0,rate:r.directRate},{memberId:grand?.member_id || 0,rate:r.indirectRate}];
 }
 function inventoryView(x) { return { ...clone(x), pay_status_text:x.pay_status, status_text:x.pay_status }; }
-const publicReads=new Set(['/index/getSubscribeSetting','/team/getTypesList','/team/getIsCollageList','/index/getInvitationNotice','/market/list']);
-const routes=new Set([...publicReads,'/member/getMyProfit','/member/personProfit','/team/getTeamInfo','/member/getMyIndirection','/member/getLevelList','/team/memberList','/team/driveDetail','/team/memberInfo','/team/capitalDetail','/team/orderDetail','/member/withdraw','/member/withdrawalInfo','/member/notifications','/member/readNotification','/member/setPay','/member/changePayPassword','/certification/getIsRealName','/certification/addRealName','/certification/status','/merchant/isStoreApply','/member/isOpening','/card/cardList','/card/bindingCard','/card/bindAdaPayCard','/member/accountOpening','/order/subscribe','/order/subscribePay','/order/subscriptions','/warehouse/list','/warehouse/delivery','/order/toSplitOrder','/warehouse/listing','/warehouse/cancelListing','/market/buy','/order/getServiceCharge','/order/toServiceCharge','/order/toServiceChargeWithVoucher','/order/getConsignmentCollection','/order/confirm_payment_voucher','/circle/download','/member/share','/index/getMemberId']);
-const writes=new Set(['/member/withdraw','/member/readNotification','/member/setPay','/member/changePayPassword','/certification/addRealName','/card/bindingCard','/card/bindAdaPayCard','/member/accountOpening','/order/subscribe','/order/subscribePay','/warehouse/delivery','/order/toSplitOrder','/warehouse/listing','/warehouse/cancelListing','/market/buy','/order/toServiceCharge','/order/toServiceChargeWithVoucher','/order/getConsignmentCollection','/order/confirm_payment_voucher','/circle/download']);
+const publicReads=new Set(['/index/close_consignment','/loodgoods/getCategoryGoodsList','/goods/getPurchaseNum','/index/getSubscribeSetting','/team/getTypesList','/team/getIsCollageList','/index/getInvitationNotice','/market/list']);
+const routes=new Set([...publicReads,'/member/getMyProfit','/member/personProfit','/team/getTeamInfo','/member/getMyIndirection','/member/getLevelList','/team/memberList','/team/driveDetail','/team/memberInfo','/team/capitalDetail','/team/orderDetail','/member/withdraw','/member/withdrawalInfo','/member/notifications','/member/readNotification','/member/changePayPassword','/certification/getIsRealName','/certification/addRealName','/certification/status','/merchant/isStoreApply','/member/isOpening','/card/cardList','/card/bindingCard','/card/bindAdaPayCard','/member/accountOpening','/order/subscribe','/order/subscribePay','/order/subscriptions','/warehouse/list','/warehouse/delivery','/order/toSplitOrder','/warehouse/listing','/warehouse/cancelListing','/market/buy','/order/toAddOrder','/warehouse/consignAll','/order/getServiceCharge','/order/toServiceCharge','/order/toServiceChargeWithVoucher','/order/getConsignmentCollection','/order/confirm_payment_voucher','/circle/download','/member/share','/index/getMemberId']);
+const writes=new Set(['/member/withdraw','/member/readNotification','/member/changePayPassword','/certification/addRealName','/card/bindingCard','/card/bindAdaPayCard','/member/accountOpening','/order/subscribe','/order/subscribePay','/warehouse/delivery','/order/toSplitOrder','/warehouse/listing','/warehouse/cancelListing','/market/buy','/order/toAddOrder','/warehouse/consignAll','/order/toServiceCharge','/order/toServiceChargeWithVoucher','/order/getConsignmentCollection','/order/confirm_payment_voucher','/circle/download']);
 export function workflowsH5(store,route,p,token,method) {
   if (!routes.has(route) && route!=='/warehouse/pay') return;
   ready(store);
   if ((writes.has(route) || route==='/warehouse/pay') && method!=='POST') return fail('请使用 POST 提交操作');
   const u=store.user(token), r=rules(store.state);
   if (!u && !publicReads.has(route)) return {code:-500,msg:'请先登录',data:{}};
+  const ctx={rules,notify};
+  if (route==='/index/close_consignment') return ok({value:phase(r,'grab')==='open'?10:20});
+  if (route==='/loodgoods/getCategoryGoodsList' && String(p.specialarea_id)===GRAB_SESSION_ID) return grabGoodsList(store,u,r,p);
+  if (route==='/goods/getPurchaseNum' && p.order_id && grabPool(store,u).some(x=>String(x.order_id)===String(p.order_id))) return ok({num:1,purchase_num:1,limit_num:1,source:'consignment'});
+  if (['/loodgoods/getCategoryGoodsList','/goods/getPurchaseNum'].includes(route)) return;
+  if (route==='/order/toAddOrder') return grab(ctx,store,u,p);
   if (route==='/index/getSubscribeSetting') return ok({is_open:1,amount:'0.00',subscribe_e_card:'0.00',e_card_number:u?.e_card_number || '0.00',message:'免费预约，开拍提醒可在站内消息查看'});
   if (route==='/team/getTypesList') return ok({list:paginate([],p)});
   if (route==='/team/getIsCollageList') return ok([]);
   if (route==='/index/getInvitationNotice') return ok({content:'会员账号由管理员建立。邀请关系由管理员核实后在建立账号时绑定。'});
   if (route==='/market/list') return ok(store.state.users.flatMap(s=>s.warehouse.filter(w=>w.pay_status==='寄卖中').map(w=>({order_id:w.order_id,goods_name:w.goods_name,goods_image:w.image,price:w.sale_price,quantity:w.goods_num || 1,seller:s.nickName,owner:s.member_id===u?.member_id}))));
   if (route==='/index/getMemberId') return ok(u.member_id);
-  if (route==='/member/share') return ok({member_id:u.member_id,invitation_code:u.invitation_code,path:'/#/pages/index/index?invite='+encodeURIComponent(u.invitation_code)});
+  if (route==='/member/share') return ok({member_id:u.member_id,invitation_code:u.invitation_code,path:'/#/pages/login/register?member_id='+u.member_id});
   if (route==='/member/notifications') {
     for (const id of u.subscriptions) {
       const a=store.state.auctions.find(x=>String(x.auctionId)===String(id));
@@ -75,7 +84,7 @@ export function workflowsH5(store,route,p,token,method) {
     for(const session of Object.values(store.state.sessions)) if(session.memberId===u.member_id) delete session.payVerifiedUntil;
     return ok({},'交易密码已更新');
   }
-  if(['/member/setPay','/card/bindingCard','/card/bindAdaPayCard','/member/accountOpening'].includes(route)) {
+  if(['/card/bindingCard','/card/bindAdaPayCard','/member/accountOpening'].includes(route)) {
     if(!verified(store,u,p,token))return fail('请输入正确交易密码');
     if(!accountValid(p))return fail('请填写银行、收款人及12至30位银行卡号');
     u.payment={bank:p.bank.trim(),bank_name:p.bank_name.trim(),bank_card:String(p.bank_card),bank_branch:String(p.bank_branch || '').slice(0,120)};
@@ -141,19 +150,27 @@ export function workflowsH5(store,route,p,token,method) {
   }
   if(route==='/order/getServiceCharge') {
     if(!warehouse)return fail('仓库订单不存在');
-    return ok({e_price:money(Number(warehouse.pay_price)*r.consignmentFeeRate/100),goods_price:warehouse.pay_price,amount:u.amount,e_card_number:u.e_card_number,fee_rate:r.consignmentFeeRate});
+    return ok({e_price:money(Number(warehouse.pay_price)*r.consignmentFeeRate/100),goods_price:warehouse.pay_price,consignment_goods_price:defaultSalePrice(warehouse,r),price:defaultSalePrice(warehouse,r),uplift_rate:r.consignUpliftRate,amount:u.amount,e_card_number:u.e_card_number,fee_rate:r.consignmentFeeRate});
   }
   if(['/warehouse/listing','/order/toServiceCharge','/order/toServiceChargeWithVoucher'].includes(route)) {
-    if(!warehouse || warehouse.pay_status!=='结算完毕' || warehouse.is_delivery || warehouse.is_consignment)return fail('仅已结算的在库商品可寄卖');
-    if(!amountValid(p.sale_price))return fail('请输入本批商品总寄卖价');
-    if(!verified(store,u,p,token))return fail('请输入正确交易密码');
+    if(!warehouse || !consignable(warehouse))return fail('仅已结算的在库商品可寄卖');
+    const timing=consignWindowProblem(r);if(timing)return fail(timing);
+    const price=p.sale_price===undefined || p.sale_price==='' ? defaultSalePrice(warehouse,r) : p.sale_price;
+    if(!amountValid(price))return fail('请输入本批商品总寄卖价');
     const fee=Number(money(Number(warehouse.pay_price)*r.consignmentFeeRate/100));
+    // The H5 consignment page sends no password: listing at the default +3% price with no fee moves no money.
+    const custom=cents(price)!==cents(defaultSalePrice(warehouse,r));
+    if((custom || fee>0) && !verified(store,u,p,token))return fail('请输入正确交易密码');
     if(p.quoted_fee!==undefined && cents(p.quoted_fee)!==cents(fee))return fail('服务费已更新，请重新选择寄卖并核对金额');
-    if(cents(u.amount)<cents(fee))return fail('余额不足以支付寄卖服务费');
-    if(fee)entry(store,u,'amount',-fee,'寄卖服务费',warehouse.order_id);
-    Object.assign(warehouse,{sale_price:money(p.sale_price),is_consignment:1,side:1,pay_status:'寄卖中'});
-    u.listingFees.unshift({voucher_id:store.id(),order_id:warehouse.order_id,goods_name:warehouse.goods_name,total_fee:money(fee),amount_deduct:money(fee),cash_amount:'0.00',status:2,status_text:'已通过',create_time:now()});
-    consume(store,token);return ok({},'商品已发布到寄卖市场');
+    const problem=listItem(store,u,warehouse,price,r);if(problem)return fail(problem);
+    consume(store,token);return ok({},'商品已发布到寄卖市场，售价 '+money(price)+' 元');
+  }
+  if(route==='/warehouse/consignAll') {
+    const timing=consignWindowProblem(r);if(timing)return fail(timing);
+    if(!u.warehouse.some(consignable))return fail('暂无可寄售的在库商品');
+    if(r.consignmentFeeRate>0 && !verified(store,u,p,token))return fail('请输入正确交易密码');
+    const result=consignAll(store,u,r);if(result.problem)return fail(result.problem);
+    consume(store,token);return ok({count:result.count},'已一键寄售 '+result.count+' 件，价格为原价上浮 '+r.consignUpliftRate+'%');
   }
   if(route==='/warehouse/cancelListing') {
     if(!warehouse || warehouse.pay_status!=='寄卖中')return fail('仅未被购买的寄卖商品可撤回');
@@ -163,18 +180,8 @@ export function workflowsH5(store,route,p,token,method) {
     if(!requestValid(p))return fail('缺少有效请求编号');
     const previous=u.warehouse.find(w=>w.purchase_request===p.request_id);
     if(previous)return String(previous.source_order_id)===String(p.order_id)?ok({order_id:previous.order_id},'订单已存在'):fail('同一请求不能购买不同商品');
-    const seller=store.state.users.find(s=>s.warehouse.some(w=>String(w.order_id)===String(p.order_id))), item=seller?.warehouse.find(w=>String(w.order_id)===String(p.order_id));
-    if(!item || item.pay_status!=='寄卖中' || seller.member_id===u.member_id)return fail('商品不可购买或不能购买自己的商品');
-    if(!verified(store,u,p,token))return fail('请输入正确交易密码');
-    if(cents(u.amount)<cents(item.sale_price))return fail('余额不足');
-    const purchased={...clone(item),order_id:store.id(),member_id:u.member_id,pay_status:'结算完毕',pay_price:item.sale_price,goods_price:money(Number(item.sale_price)/Number(item.goods_num || 1)),is_consignment:0,side:0,purchase_request:p.request_id,source_order_id:item.order_id,create_time:now(),pay_time:now()};
-    purchased.order_no='W'+purchased.order_id;delete purchased.sale_price;
-    entry(store,u,'amount',-Number(item.sale_price),'购买寄卖商品',purchased.order_id);entry(store,seller,'amount',Number(item.sale_price),'寄卖成交收款',item.order_id);
-    item.pay_status='已售出';item.buyer_id=u.member_id;item.soldAt=now();u.warehouse.unshift(purchased);
-    const settlement={pay_status:2,pay_price:item.sale_price,create_time:now(),goods_name:item.goods_name,goods_image:item.image,pay_type:2};
-    seller.settlements.unshift({...settlement,id:store.id(),order_id:item.order_id,direction:'in',user:{nickName:u.nickName},order_no:item.order_no});
-    u.settlements.unshift({...settlement,id:store.id(),order_id:purchased.order_id,direction:'out',user:{nickName:seller.nickName},order_no:purchased.order_no});
-    notify(store,seller,'寄卖已成交',item.goods_name+' 已成交，收入 '+item.sale_price+' 元。');consume(store,token);return ok({order_id:purchased.order_id},'购买成功，商品已入库');
+    if(!store.state.users.some(s=>s.warehouse.some(w=>String(w.order_id)===String(p.order_id) && w.pay_status==='寄卖中' && s.member_id!==u.member_id)))return fail('商品不可购买或不能购买自己的商品');
+    return grab(ctx,store,u,p);
   }
   if(['/order/getConsignmentCollection','/order/confirm_payment_voucher'].includes(route)) {
     const settlement=u.settlements.find(s=>s.direction==='in' && (String(s.id)===String(p.id) || String(s.order_id)===String(p.order_id)));
@@ -197,12 +204,20 @@ const adminOK=(data={},msg='操作成功')=>({code:200,msg,data}), adminFail=msg
 export function workflowsAdmin(store,route,p,actor,method) {
   ready(store);const [, ,resource,id]=route.split('/');
   if(resource==='content' && id==='business' && method==='PUT') {
-    const v=p.value;
+    const v=p.value && {...defaults,...store.state.content.business,...p.value};
     if(!v || !['directRate','indirectRate','consignmentFeeRate','withdrawalFeeRate','withdrawalMinimum'].every(k=>typeof v[k]==='number' && Number.isFinite(v[k]) && v[k]>=0) || v.directRate+v.indirectRate>100 || v.consignmentFeeRate>100 || v.withdrawalFeeRate>=100 || v.withdrawalMinimum>1000000 || !Array.isArray(v.levels) || !v.levels.length || v.levels.length>20 || v.levels.some(x=>!textValid(x.name,20) || typeof x.minimumSpend!=='number' || !Number.isFinite(x.minimumSpend) || x.minimumSpend<0))return adminFail('请填写有效比例、最低额和等级规则；分佣比例合计不能超过100%');
+    if(!scheduleValid(v))return adminFail('抢购/寄售时间须为 HH:mm 且开始早于结束，每人限抢数量为 1–100 的整数，燃料费、利润、上浮比例须在 0–100 之间');
     store.state.content.business={...Object.fromEntries(Object.keys(defaults).filter(k=>k!=='levels').map(k=>[k,v[k]])),levels:v.levels.map(x=>({name:x.name,minimumSpend:x.minimumSpend})).sort((a,b)=>a.minimumSpend-b.minimumSpend)};return adminOK({},'业务规则已保存，新订单使用新规则');
   }
+  if(resource==='warehouse' && id==='consign-all' && method==='PUT') {
+    const result=consignEveryone(store,rules(store.state));
+    return adminOK(result,result.items?`已一键转寄售：${result.members} 位会员共 ${result.items} 件，价格为原价上浮 ${rules(store.state).consignUpliftRate}%`:'暂无可转寄售的在库商品');
+  }
+  if(resource==='ledger' && p.view==='statement' && method==='GET') return adminOK(dailyStatement(store,rules(store.state),p.date));
   if(resource==='members' && id && method==='PUT' && p.action) {
     const u=store.state.users.find(x=>String(x.member_id)===id);if(!u)return adminFail('会员不存在');
+    if(p.action==='rechargeFuel')return rechargeFuel(store,u,p,actor);
+    if(['pause','resume'].includes(p.action))return pauseMember(u,p.action==='pause',p.remark);
     if(p.action==='resetPassword') {if(!textValid(p.password,128) || p.password.length<8)return adminFail('新密码至少八位');u.passwordHash=passwordHash(p.password);for(const [key,s] of Object.entries(store.state.sessions))if(s.memberId===u.member_id)delete store.state.sessions[key];return adminOK({},'密码已重置，原登录会话已撤销');}
     if(['verify','rejectIdentity'].includes(p.action)) {if(!u.certification || u.certification.status!=='待审核' || !textValid(p.remark,500))return adminFail('仅待审核资料可处理，必须填写线下核验或驳回说明');Object.assign(u.certification,{status:p.action==='verify'?'已通过':'已驳回',remark:p.remark,reviewedBy:actor.userName,reviewedAt:now()});if(p.action==='verify')u.identity_name=u.certification.name;notify(store,u,'身份资料审核结果',u.certification.status+'：'+p.remark);return adminOK();}
     return adminFail('未知会员操作');

@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import {parse} from 'acorn';
 const pages={
-  'pages-login-register':'register','pages-personal-passwordone':'password','pages-classify-setpwd':'password',
+  'pages-personal-passwordone':'password','pages-classify-setpwd':'password',
   'pages-personal-record':'withdraw','pages-personal-identify':'identity','pages-personal-poster':'hub',
   'pages-order-shoukm':'account','pages-order-skmlist':'account','pages-order-bankCard':'account','pages-order-binding':'account','pages-order-account':'account',
   'pages-order-dgAccount-account':'account','pages-order-dgAccount-bankCard':'account','pages-order-dgAccount-binding':'account',

@@ -438,6 +438,30 @@ export default {
                         attrs: { "scroll-y": !0, "show-scrollbar": !1 },
                       },
                       [
+                        0 == t.smltype && "payment" == t.showTab
+                          ? a(
+                              "v-uni-view",
+                              {
+                                staticClass: "consign-all-bar",
+                                staticStyle: {
+                                  margin: "12px 16px 0",
+                                  padding: "10px 0",
+                                  "text-align": "center",
+                                  background: "#12a84f",
+                                  color: "#fff",
+                                  "border-radius": "8px",
+                                  "font-size": "15px",
+                                },
+                                on: {
+                                  click: function (e) {
+                                    ((arguments[0] = e = t.$handleEvent(e)),
+                                      t.consignAll());
+                                  },
+                                },
+                              },
+                              [t._v("一键全部寄售")],
+                            )
+                          : t._e(),
                         a(
                           "v-uni-view",
                           {
@@ -833,7 +857,7 @@ export default {
                                       "v-uni-view",
                                       { staticClass: "trust_m" },
                                       [
-                                        a("v-uni-text", [t._v("支付优惠券")]),
+                                        a("v-uni-text", [t._v("支付燃料费")]),
                                         a("v-uni-text", [
                                           t._v(
                                             "￥" + t._s(t.zhuanpaiinfo.e_price),
@@ -852,7 +876,7 @@ export default {
                                           { staticClass: "cont_col" },
                                           [
                                             t._v(
-                                              "我的优惠券：(" +
+                                              "我的燃料费：(" +
                                                 t._s(
                                                   t.zhuanpaiinfo.member_amount,
                                                 ) +
@@ -891,7 +915,7 @@ export default {
                                       },
                                       [
                                         a("v-uni-text", [
-                                          t._v("优惠券余额不足"),
+                                          t._v("燃料费余额不足"),
                                         ]),
                                         a(
                                           "v-uni-view",
@@ -1066,7 +1090,7 @@ export default {
                                       "v-uni-view",
                                       { staticClass: "trust_m" },
                                       [
-                                        a("v-uni-text", [t._v("支付优惠券")]),
+                                        a("v-uni-text", [t._v("支付燃料费")]),
                                         a("v-uni-text", [
                                           t._v(
                                             "￥" + t._s(t.zhuanpaiinfo.e_price),
@@ -1125,7 +1149,7 @@ export default {
                                           },
                                           [
                                             a("v-uni-text", [
-                                              t._v("优惠券余额不足"),
+                                              t._v("燃料费余额不足"),
                                             ]),
                                             a(
                                               "v-uni-view",
@@ -2801,6 +2825,28 @@ export default {
           },
           tab: function (t) {
             ((this.showTab = t), (this.list = []), this.getinit());
+          },
+          consignAll: function () {
+            var t = this;
+            uni.showModal({
+              title: "一键全部寄售",
+              content:
+                "将把仓库里所有已结算的商品，按原价上浮后统一上架寄售（仅限寄售时间内）。确认继续？",
+              success: function (e) {
+                e.confirm &&
+                  (uni.showLoading({ title: "寄售中" }),
+                  t
+                    .request("/warehouse/consignAll", {})
+                    .then(function (e) {
+                      (uni.hideLoading(),
+                        t.$tip(e.data.msg),
+                        1 == e.data.code && ((t.list = []), t.getinit()));
+                    })
+                    .catch(function () {
+                      uni.hideLoading();
+                    }));
+              },
+            });
           },
           changeType: function (t) {
             ((this.smltype = t),

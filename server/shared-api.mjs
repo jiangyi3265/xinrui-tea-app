@@ -5,7 +5,9 @@ import { passwordMatches, passwordHash } from './store.mjs';
 import crypto from 'node:crypto';
 import { auctionView, ensureAuctions } from './demo/auction.mjs';
 import { sharedPublic, categories } from './shared-public.mjs';
-import { workflowsH5, workflowsAdmin, defaults, commissionSnapshot, settleCommission } from './workflows.mjs';
+import { workflowsH5, workflowsAdmin, defaults, commissionSnapshot, settleCommission, rules } from './workflows.mjs';
+import { grabSession, cancelGrab } from './grab.mjs';
+import { registerMember, disabledLoginMessage } from './members.mjs';
 
 // External providers are deliberately NOT simulated in shared mode.
 const publicRoutes = new Set([
@@ -18,7 +20,7 @@ const publicRoutes = new Set([
   '/goods/getPurchaseNum', '/loodgoods/getCategoryGoodsList',
   '/notice/getNotice', '/notice/getNoticeInfo', '/region/getAllList',
   '/auction/list', '/auction/detail', '/wx/payGateway', '/getPayGatWay',
-  '/index/getSubscribeSetting', '/index/close_consignment',
+  '/index/getSubscribeSetting', '/index/close_consignment', '/member/getInvitationCode',
 ]);
 const memberRoutes = new Set([
   '/member/getMemberDetails', '/member/getIsPayPassword', '/member/verificationPayPassword',
@@ -36,7 +38,7 @@ const memberRoutes = new Set([
   '/recharge/lists', '/recharge/getOrder', '/recharge/toOrder', '/recharge/getOk', '/ustd/rechargeLog',
   '/member/getApplyList', '/member/getTransfer', '/member/toTransfer', '/demo/coupons',
   '/auction/bids', '/auction/bid', '/auction/settle', '/_upload', '/order/toAddOrder', '/order/cancel_grab',
-  '/order/express', '/member/setPay', '/member/getInvitationCode',
+  '/order/express', '/member/setPay', '/member/member/getPoster',
   '/order/remindShipment',
 ]);
 const postOnly = new Set([
@@ -86,10 +88,38 @@ function initialize(store) {
 function validatePaymentPassword(store, user, p, token) {
   return passwordMatches(p.pay_password || p.pwd || p.password, user.payPasswordHash) || store.state.sessions[token]?.payVerifiedUntil > Date.now();
 }
+// Receiving accounts (收款管理): bank card, WeChat and Alipay. Each type is saved
+// on its own and merged into the member's payment record. The transaction
+// password replaces the SMS code the original page asked for.
+function savePayment(store, user, p, token) {
+  if (!validatePaymentPassword(store, user, { pay_password: p.pay_password || p.code }, token)) return fail('请输入正确交易密码');
+  const text = (value, max) => typeof value === 'string' && value.trim().length > 0 && value.length <= max && !/[<>\x00-\x1f]/.test(value);
+  const mobile = value => value === undefined || value === '' || /^1\d{10}$/.test(String(value));
+  const next = {};
+  if (p.bank_card !== undefined || p.bank !== undefined) {
+    if (!text(p.bank, 60) || !text(p.bank_name, 40) || !/^\d{12,30}$/.test(String(p.bank_card)) || !mobile(p.mobile)) return fail('请填写银行、开户人、12至30位银行卡号及正确的手机号');
+    Object.assign(next, { bank: p.bank.trim(), bank_name: p.bank_name.trim(), bank_card: String(p.bank_card), mobile: String(p.mobile || ''), bank_branch: String(p.bank_branch || '').slice(0, 120) });
+  } else {
+    for (const type of ['wx', 'zfb']) {
+      if (p[type + '_name'] === undefined && p[type + '_account'] === undefined && p[type + '_image'] === undefined) continue;
+      const image = p[type + '_image'];
+      if (!text(p[type + '_name'], 40) || !mobile(p[type + '_mobile']) || (p[type + '_account'] && !text(p[type + '_account'], 60))) return fail('请填写' + (type === 'wx' ? '微信' : '支付宝') + '姓名及正确的手机号');
+      if (!image || (image !== user.payment?.[type + '_image'] && !verifiedImage(user, image))) return fail('请通过上传接口上传' + (type === 'wx' ? '微信' : '支付宝') + '收款二维码图片');
+      Object.assign(next, { [type + '_name']: p[type + '_name'].trim(), [type + '_account']: String(p[type + '_account'] || ''), [type + '_mobile']: String(p[type + '_mobile'] || ''), [type + '_image']: image });
+    }
+  }
+  if (!Object.keys(next).length) return fail('请填写要保存的收款方式');
+  user.payment = { ...user.payment, ...next };
+  consumePayVerification(store, token);
+  return ok({}, '收款方式已保存');
+}
+function consumePayVerification(store, token) { if (store.state.sessions[token]) delete store.state.sessions[token].payVerifiedUntil; }
 export function sharedH5(store, route, p, token, method) {
   initialize(store);
   if (!['GET','POST'].includes(method) || (postOnly.has(route) && method!=='POST')) return fail('此接口不支持该请求方法，操作未执行');
-  if (['/member/registerAnAccount','/v1/sms'].includes(route)) return fail('此接口已关闭，账号由管理员建立');
+  if (route === '/v1/sms') return fail('短信服务未接入，注册和找回无需短信验证码');
+  if (route === '/member/registerAnAccount') return method === 'POST' ? registerMember(store, p, rules(store.state)) : fail('请使用 POST 提交注册');
+  if (route === '/member/accountLogin') { const paused = disabledLoginMessage(store, p); if (paused) return fail(paused); }
   if (route==='/member/logout') { delete store.state.sessions[token]; return ok({},'已退出登录'); }
   const user = store.user(token);
   const workflow=workflowsH5(store,route,p,token,method);
@@ -98,6 +128,7 @@ export function sharedH5(store, route, p, token, method) {
   if (publicResult) return publicResult;
   const contentKey = Object.keys(contents).find(k => contents[k] === route);
   if (contentKey) {
+    if (contentKey === 'store' && store.state.content.store) return ok({ ...clone(store.state.content.store), register_verify: '0' });
     if (store.state.content[contentKey] !== undefined) return ok(clone(store.state.content[contentKey]));
     if (['banners','navigation','circle'].includes(contentKey)) return ok([]);
     return fail('请先在后台配置此内容');
@@ -107,13 +138,17 @@ export function sharedH5(store, route, p, token, method) {
   if (route === '/getPayGatWay') return ok({ is_open: 0 });
   if (route === '/goods/getLootList') {
     const auctions=ensureAuctions(store).filter(a => ['scheduled','running'].includes(a.status) && store.state.catalog.some(x=>isPublished(x) && String(x.goods_id)===String(a.goodsId)));
-    return ok({list:auctions.map(a => ({
+    return ok({list:[grabSession(store,user,rules(store.state)),...auctions.map(a => ({
       status: a.status === 'running' ? 10 : 20, name:'auction-'+a.auctionId, srot:a.auctionId,
       auction_id:a.auctionId, auction:auctionView(store,a,user?.member_id,false),
       time_list:{specialarea_id:a.auctionId,title:{ordinary_title_main:a.title,ordinary_title:'真实竞价场次',introduction_title:''},images:{ordinary_images:a.image,introduction_images:''},is_subscribe:user?.subscriptions?.includes(String(a.auctionId)) ? 1 : 0,is_introduction_order:0,is_ordinary_order:0,time:{new_time:Math.floor(Date.now()/1000),start_time:Date.parse(a.startTime)/1000,start_buy_time:Date.parse(a.startTime)/1000,end_time:Date.parse(a.endTime)/1000,start_end_time:a.startTime.slice(11,16),start_end_time1:a.endTime.slice(11,16)}}
-    }))});
+    }))]});
   }
   if (['/shopgoods/getDetails','/score/getDetails','/goods/getLootDetails'].includes(route) && !store.state.catalog.some(x => isPublished(x) && String(x.goods_id) === String(p.goods_id))) return fail('商品不存在或已下架');
+  if (route === '/member/getInvitationCode') {
+    const inviter = p.member_id ? store.state.users.find(x => String(x.member_id) === String(p.member_id) && x.status !== '1') : user;
+    return inviter ? ok(inviter.invitation_code) : fail('邀请人不存在或已被暂停');
+  }
   if (!publicRoutes.has(route) && !user) return { code: -500, msg: '请先登录', data: {} };
   if (!publicRoutes.has(route) && !memberRoutes.has(route)) return fail('此业务尚未接入真实服务，未执行操作');
   if (route==='/order/subscribe') return fail('预约收费及通知规则尚未配置，预约未提交');
@@ -149,11 +184,7 @@ export function sharedH5(store, route, p, token, method) {
     return goods && goods.pay_status !== '已取消' && payment?.pay_status === 2
       ? ok(1) : fail('付款尚未审核通过');
   }
-  if (route === '/member/getInvitationCode') return ok(user.invitation_code);
-  if (route === '/member/setPay') {
-    if (p.code) return fail('短信核验服务尚未接入，收款信息未修改');
-    return fail('收款信息修改需身份核验，当前未开放');
-  }
+  if (route === '/member/setPay') return savePayment(store, user, p, token);
   if (route === '/member/getNotice') return store.state.content.agreement ? ok({is_sign:user.sign_image ? 1 : 0,content:store.state.content.agreement.consignment_rule || ''}) : fail('请先由后台配置寄卖协议');
   if (route === '/order/express') {
     const order = user.orders.find(o => String(o.order_id) === String(p.order_id));
@@ -241,20 +272,6 @@ export function sharedH5(store, route, p, token, method) {
       if (existing) return existing.hash === requestHash ? clone(existing.result) : fail('同一请求编号不能用于不同订单');
     }
   }
-  if (route === '/order/toAddOrder') {
-    const product = store.state.catalog.find(x => String(x.goods_id) === String(p.goods_id));
-    if (!product || !isPublished(product)) return fail('商品不存在或已下架');
-    if (ensureAuctions(store).some(x => String(x.goodsId) === String(product.goods_id) && ['running','scheduled'].includes(x.status))) return fail('竞价商品请通过出价参与');
-    const existing = user.warehouse.find(x => x.goods_id === product.goods_id && x.pay_status === '待支付' && !x.auctionId);
-    if (existing) return ok({ order_id: existing.order_id }, '已生成待付款单');
-    if (Number(product.spec?.[0]?.stock_num || 0) < 1) return fail('库存不足');
-    const goods = makeWarehouse(store.id(), product);
-    goods.member_id = user.member_id; goods.stock_reserved = 1;
-    product.spec[0].stock_num -= 1;
-    user.warehouse.unshift(goods);
-    user.settlements.unshift({ id: store.id(), order_id: goods.order_id, order_no: goods.order_no, direction: 'out', pay_status: 0, pay_price: goods.pay_price, specialarea_id: 1, create_time: now(), createtime: now(), goods_name: goods.goods_name, goods_image: goods.image, goods_price: goods.goods_price, pay: clone(store.state.content.store.pay || {}), user: { nickName: '平台收款', mobile: '' } });
-    return ok({ order_id: goods.order_id }, '已生成待付款单');
-  }
   if (route === '/order/cancel_grab' || route === '/order/cancel') {
     const goods = user.warehouse.find(x => String(x.order_id) === String(p.order_id));
     if (goods) {
@@ -262,8 +279,9 @@ export function sharedH5(store, route, p, token, method) {
       const product = store.state.catalog.find(x => x.goods_id === goods.goods_id);
       if (goods.stock_reserved && !goods.stock_released && product) product.spec[0].stock_num += goods.stock_reserved;
       goods.stock_released = true; goods.pay_status = '已取消';
+      cancelGrab(store, user, goods);
       user.settlements = user.settlements.filter(x => x.order_id !== goods.order_id);
-      return ok({}, '订单已取消，库存已释放');
+      return ok({}, '订单已取消，库存已释放' + (goods.fuel_refunded ? '，燃料费已退回' : ''));
     }
   }
   if (route === '/recharge/lists') {
@@ -411,7 +429,7 @@ export function sharedAdmin(store, route, p, actor, method) {
     const [field, key] = collections[resource];
     const items = store.state.users.flatMap(user => user[field].map(record => ({ user, record })));
     if (method === 'GET') {
-      const rows = items.map(({ user, record }) => ({ ...record, recordId: record[key], memberId: user.member_id, memberName: user.nickName, phone: user.phone }))
+      const rows = items.map(({ user, record }) => ({ ...record, ...(resource === 'warehouse' ? { status_text: record.pay_status } : {}), recordId: record[key], memberId: user.member_id, memberName: user.nickName, phone: user.phone }))
         .filter(row => !p.keyword || JSON.stringify([row.order_no,row.memberName,row.phone,row.goods_name]).includes(String(p.keyword)))
         .filter(row => !p.status || String(row.status ?? row.pay_status) === String(p.status));
       return adminOK(paginateAdmin(rows, p));

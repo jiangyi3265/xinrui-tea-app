@@ -309,7 +309,19 @@ export default {
                       "v-uni-view",
                       { staticClass: "login-extra" },
                       [
-                        e._e(),
+                        t(
+                          "v-uni-text",
+                          {
+                            staticClass: "login-link",
+                            on: {
+                              click: function (i) {
+                                ((arguments[0] = i = e.$handleEvent(i)),
+                                  e.toPage("register"));
+                              },
+                            },
+                          },
+                          [e._v("没有账号？立即注册")],
+                        ),
                         t(
                           "v-uni-text",
                           {

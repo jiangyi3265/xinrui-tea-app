@@ -198,7 +198,7 @@ export default {
                         e(
                           "v-uni-view",
                           [
-                            e("v-uni-text", [t._v("积分余额")]),
+                            e("v-uni-text", [t._v("我的利润")]),
                             e("v-uni-text", [
                               t._v(t._s(t.formatMoney(t.amount))),
                             ]),
@@ -220,7 +220,7 @@ export default {
                       { staticClass: "order_t" },
                       [
                         e("v-uni-text", { staticClass: "act" }, [
-                          t._v("积分余额记录"),
+                          t._v("我的利润记录"),
                         ]),
                       ],
                       1,

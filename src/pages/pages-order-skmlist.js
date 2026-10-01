@@ -143,6 +143,7 @@ export default {
         },
         saveAll: function () {
           var t = this;
+          if (!this.code) return void this.$tip("请输入交易密码");
           if (this.validateCurrentForm()) {
             uni.showLoading({ title: "保存中" });
             var i = {};
@@ -170,12 +171,12 @@ export default {
                   zfb_image: this.form.zfb_image,
                   code: this.code,
                 }),
-              this.request("/member/setPay", i)
+              this.request("/member/setPay", Object.assign({}, i, { pay_password: this.code }))
                 .then(function (i) {
                   (uni.hideLoading(),
                     -500 != i.data.code
                       ? 1 == i.data.code
-                        ? (t.$tip("保存成功"), t.getMemberInfo())
+                        ? (t.$tip("保存成功"), (t.code = ""), t.getMemberInfo())
                         : t.$tip(i.data.msg)
                       : (t.showLogin = !0));
                 })
@@ -662,6 +663,34 @@ export default {
                   1,
                 )
               : t._e(),
+            a(
+              "v-uni-view",
+              { staticClass: "content-card" },
+              [
+                a("v-uni-view", { staticClass: "info-row" }, [
+                  a("v-uni-text", { staticClass: "info-label" }, [
+                    t._v("交易密码"),
+                  ]),
+                  a("v-uni-input", {
+                    staticClass: "info-input",
+                    attrs: {
+                      type: "password",
+                      maxlength: "6",
+                      placeholder: "请输入6位交易密码确认保存",
+                      "placeholder-style": "color:#999",
+                    },
+                    model: {
+                      value: t.code,
+                      callback: function (i) {
+                        t.code = i;
+                      },
+                      expression: "code",
+                    },
+                  }),
+                ]),
+              ],
+              1,
+            ),
             a(
               "v-uni-view",
               { staticClass: "save-wrap" },

@@ -123,13 +123,22 @@ test('shared address schema rejects objects, blank and oversized fields atomical
   assert.equal(user.addresses[0].name,'收货人'); assert.equal(user.addresses[0].detail,'测试地址');
 });
 
-test('removed registration and SMS remain closed and never create accounts',()=>{
+test('SMS stays closed; self-registration needs no SMS code, validates input and never duplicates a phone',()=>{
   const {h5,store}=setup(), n=store.state.users.length;
-  for(const route of ['/member/registerAnAccount','/v1/sms']) {
-    const r=h5(route,{phone:'13800138111',password:'local-password',code:'123456'});
-    assert.equal(r.code,0); assert.match(r.msg,/接口已关闭/);
-  }
+  const r=h5('/v1/sms',{phone:'13800138111',sendType:'register'});
+  assert.equal(r.code,0); assert.match(r.msg,/无需短信/);
+  assert.equal(h5('/member/registerAnAccount',{mobile:'13800138111',password:'local-password'},'','GET').code,0);
+  for(const bad of [{mobile:'1380013',password:'local-password'},{mobile:'13800138111',password:'short'},{mobile:'13800138111',password:'local-password',rest_password:'different'},{mobile:'13800138111',password:'local-password',invi_code:'NOPE'}])
+    assert.equal(h5('/member/registerAnAccount',bad).code,0);
   assert.equal(store.state.users.length,n);
+  const made=h5('/member/registerAnAccount',{mobile:'13800138111',nickname:'自助会员',password:'local-password',rest_password:'local-password'});
+  assert.equal(made.code,1); assert.ok(made.data.token);
+  assert.equal(store.state.users.length,n+1);
+  const member=store.state.users.at(-1);
+  assert.equal(member.e_card_number,'0.00'); assert.equal(member.score,'0.00'); assert.equal(member.amount,'0.00');
+  assert.equal(h5('/member/registerAnAccount',{mobile:'13800138111',password:'local-password'}).code,0);
+  assert.equal(h5('/member/accountLogin',{phone:'13800138111',password:'local-password'}).code,1);
+  assert.equal(store.state.users.length,n+1);
 });
 
 test('legacy shared states return an empty notice list and missing detail, never demo or exceptions',()=>{
@@ -141,7 +150,7 @@ test('legacy shared states return an empty notice list and missing detail, never
 test('shared empty auctions never fabricate listings, future times, purchase limits or enabled gates',()=>{
   const {h5,admin}=setup();
   const product=admin('/products',{goods_name:'普通商品',price:10,stock:3},'POST').data;
-  assert.deepEqual(h5('/goods/getLootList').data.list,[]);
+  assert.deepEqual(h5('/goods/getLootList').data.list.filter(x=>x.auction_id!=='grab'),[]);
   const list=h5('/loodgoods/getCategoryGoodsList',{specialarea_id:999}).data;
   assert.equal(list.list.total,0); assert.equal(list.time_info.end_time,0);
   const detail=h5('/goods/getLootDetails',{goods_id:product.goods_id}).data;
@@ -213,6 +222,6 @@ test('all shared public auction aliases hide drafts and unpublished products and
     hide();
     assert.deepEqual(h5('/auction/list').data.list,[]);
     assert.equal(h5('/auction/detail',{auction_id:auction.auctionId}).code,0);
-    assert.deepEqual(h5('/goods/getLootList').data.list,[]);
+    assert.deepEqual(h5('/goods/getLootList').data.list.filter(x=>x.auction_id!=='grab'),[]);
   }
 });

@@ -2179,7 +2179,7 @@ export default {
         a["a"],
         r,
       );
-    e["default"] = d.exports;
+    e["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("warehouse") : d.exports;
   },
   ee53: function (t, e, i) {
     "use strict";

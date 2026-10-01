@@ -27,7 +27,7 @@ export default {
         r["a"],
         a,
       );
-    e["default"] = s.exports;
+    e["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("recharge") : s.exports;
   },
   "08e6": function (t, e, o) {
     (function (e) {

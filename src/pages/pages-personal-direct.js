@@ -146,7 +146,7 @@ export default {
         i["a"],
         s,
       );
-    e["default"] = c.exports;
+    e["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("team") : c.exports;
   },
   "8e6a": function (t, e, n) {
     var i = n("7098");

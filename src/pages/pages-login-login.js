@@ -309,6 +309,7 @@ export default {
                       "v-uni-view",
                       { staticClass: "login-extra" },
                       [
+                        e._e(),
                         t(
                           "v-uni-text",
                           {
@@ -316,20 +317,7 @@ export default {
                             on: {
                               click: function (i) {
                                 ((arguments[0] = i = e.$handleEvent(i)),
-                                  e.toPage("register"));
-                              },
-                            },
-                          },
-                          [e._v("注册账号")],
-                        ),
-                        t(
-                          "v-uni-text",
-                          {
-                            staticClass: "login-link",
-                            on: {
-                              click: function (i) {
-                                ((arguments[0] = i = e.$handleEvent(i)),
-                                  e.toPage("/pages/personal/passwordone"));
+                                  e.$tip("忘记密码请联系管理员重置"));
                               },
                             },
                           },

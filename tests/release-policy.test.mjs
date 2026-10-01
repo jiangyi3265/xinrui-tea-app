@@ -6,9 +6,9 @@ test('explicit production H5 cannot silently build the demo or embed unsafe API 
   assert.doesNotThrow(()=>validateReleaseBuild({TEA_RELEASE_BUILD:'1',H5_API_BASE:'https://api.example.com/app'}));
   assert.doesNotThrow(()=>validateReleaseBuild({})); // explicitly retained local demo build
 });
-test('non-payment scope excludes only the payment provider, never unrelated readiness gaps',()=>{
+test('current scope removes SMS registration and excludes only requested payment providers while retaining operational limitations',()=>{
   const scope=releaseScope(true);
-  assert.equal(scope.scope,'non-payment'); assert.equal(scope.excluded.length,1);
-  assert.ok(scope.blockers.some(x=>x.includes('短信')));assert.ok(scope.blockers.some(x=>x.includes('目标容量')));
+  assert.equal(scope.scope,'non-payment'); assert.equal(scope.excluded.length,2);
+  assert.ok(scope.excluded.some(x=>x.includes('短信')));assert.ok(scope.blockers.some(x=>x.includes('目标容量')));
   assert.ok(releaseScope().blockers.some(x=>x==='第三方支付未接入及验收'));
 });

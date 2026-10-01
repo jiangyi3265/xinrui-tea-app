@@ -76,6 +76,7 @@ export default {
       },
       methods: {
         paymentLabel: function () {
+          if (this.data.order_pay_price === undefined && !this.pointsPending) return '正在读取订单';
           return this.pointsPending ? '支付 ' + this.data.order_total_score_price + ' 积分' : '付款￥' + this.data.order_pay_price;
         },
         getinit: function () {
@@ -114,6 +115,7 @@ export default {
                 },
                 "GET",
               ).then(function (i) {
+                if (i.data.code !== 1 && i.data.code !== -500) { t.$tip(i.data.msg || '商品暂不可结算'); uni.switchTab({url:'/pages/classify/classify'}); return; }
                 (-500 == i.data.code && (t.showLogin = !0),
                   1 == i.data.code && (t.data = i.data.data));
               })
@@ -127,6 +129,7 @@ export default {
                 },
                 "GET",
               ).then(function (i) {
+                if (i.data.code !== 1 && i.data.code !== -500) { t.$tip(i.data.msg || '商品暂不可结算'); uni.switchTab({url:'/pages/classify/classify'}); return; }
                 (-500 == i.data.code && (t.showLogin = !0),
                   1 == i.data.code && (t.data = i.data.data));
               });

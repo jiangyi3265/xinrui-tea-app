@@ -57,7 +57,7 @@ export default {
         i["a"],
         c,
       );
-    e["default"] = r.exports;
+    e["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("team") : r.exports;
   },
   4584: function (t, e, n) {
     t.exports = n.p + "static/img/noimg.89728664.png";

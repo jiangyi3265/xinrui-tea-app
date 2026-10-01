@@ -36,6 +36,7 @@ export async function buildH5(outputDir=path.join(root,'dist')){
   }
   await bundle({entryPoints:[path.join(root,'src/browser/runtime.mjs')],outfile:path.join(h5,'static/demo/runtime.js'),bundle:true,format:'iife',platform:'browser',target:['es2021'],minify:true,plugins:[{name:'browser-demo-store',setup(b){b.onResolve({filter:/store\.mjs$/},args=>args.importer.includes(path.sep+'server'+path.sep)?{path:path.join(root,'src/browser/store.mjs')}:undefined);}}]});
   await fs.copyFile(path.join(root,'src/demo-bridge.js'),path.join(h5,'static/demo/bridge.js'));
+  await bundle({entryPoints:[path.join(root,'src/browser/workflows.js')],outfile:path.join(h5,'static/demo/workflows.js'),bundle:true,format:'iife',platform:'browser',target:['es2021'],minify:true});
   await fs.writeFile(path.join(h5,'static/demo/config.js'), 'window.__H5_API_BASE__=' + JSON.stringify(process.env.H5_API_BASE || '') + ';');
   const html=await fs.readFile(path.join(root,'src/shell.html'),'utf8');
   await fs.writeFile(path.join(out,'index.html'),html.replaceAll('/h5/','./h5/'));

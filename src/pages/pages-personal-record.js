@@ -60,7 +60,7 @@ export default {
         i["a"],
         c,
       );
-    e["default"] = u.exports;
+    e["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("withdraw") : u.exports;
   },
   a988: function (t, e, n) {
     "use strict";

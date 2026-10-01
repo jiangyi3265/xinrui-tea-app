@@ -204,7 +204,7 @@ export default {
         n["a"],
         a,
       );
-    t["default"] = r.exports;
+    t["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("warehouse") : r.exports;
   },
   "91f8": function (e, t, i) {
     var n = i("24fb");

@@ -123,11 +123,11 @@ test('shared address schema rejects objects, blank and oversized fields atomical
   assert.equal(user.addresses[0].name,'收货人'); assert.equal(user.addresses[0].detail,'测试地址');
 });
 
-test('shared registration and SMS expose missing provider, never login-first or demo success',()=>{
+test('removed registration and SMS remain closed and never create accounts',()=>{
   const {h5,store}=setup(), n=store.state.users.length;
   for(const route of ['/member/registerAnAccount','/v1/sms']) {
     const r=h5(route,{phone:'13800138111',password:'local-password',code:'123456'});
-    assert.equal(r.code,0); assert.match(r.msg,/短信.*未配置/);
+    assert.equal(r.code,0); assert.match(r.msg,/接口已关闭/);
   }
   assert.equal(store.state.users.length,n);
 });
@@ -175,9 +175,9 @@ test('shared auction catalogue uses exact saved auction, time and product and re
   assert.equal(JSON.stringify(store.state),before);
 });
 
-test('shared unconfigured reservation fails without partial subscription records',()=>{
+test('shared reservation rejects nonexistent auctions without partial records',()=>{
   const {h5,user,token}=setup(); const before=JSON.stringify(user.subscriptions);
-  assert.equal(h5('/index/getSubscribeSetting').data.is_open,0);
+  assert.equal(h5('/index/getSubscribeSetting').data.is_open,1);
   assert.equal(h5('/order/subscribe',{specialarea_id:999999},token).code,0);
   assert.equal(JSON.stringify(user.subscriptions),before);
 });

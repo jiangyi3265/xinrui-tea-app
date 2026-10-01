@@ -933,7 +933,7 @@ export default {
                           attrs: { src: a("4aa1"), mode: "aspectFit" },
                         }),
                         i("v-uni-text", { staticClass: "menu-row-title" }, [
-                          e._v("二维码"),
+                          e._v("业务中心"),
                         ]),
                         i("u-icon", {
                           attrs: {

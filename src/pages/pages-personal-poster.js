@@ -27,7 +27,7 @@ export default {
         a["a"],
         r,
       );
-    t["default"] = c.exports;
+    t["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("hub") : c.exports;
   },
   "5bed": function (e, t, i) {
     var a = i("c5bd");

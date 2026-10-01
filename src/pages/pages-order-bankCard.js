@@ -533,7 +533,7 @@ export default {
         i["a"],
         c,
       );
-    n["default"] = u.exports;
+    n["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("account") : u.exports;
   },
   e362: function (t, n, e) {
     t.exports = e.p + "static/img/yhk_icon.db47b6cf.png";

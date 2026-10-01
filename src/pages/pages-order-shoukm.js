@@ -541,7 +541,7 @@ export default {
         i["a"],
         o,
       );
-    a["default"] = c.exports;
+    a["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("account") : c.exports;
   },
   "7e15": function (t, a, e) {
     t.exports = e.p + "static/img/weixinshoukuanma.31c19dd4.png";

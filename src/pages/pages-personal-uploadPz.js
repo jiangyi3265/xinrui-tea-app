@@ -113,7 +113,7 @@ export default {
         a["a"],
         o,
       );
-    t["default"] = u.exports;
+    t["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("recharge") : u.exports;
   },
   "9cd6": function (i, t, e) {
     "use strict";

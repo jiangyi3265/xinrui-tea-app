@@ -1217,7 +1217,7 @@ export default {
                     e.request("/index/getMemberId").then(function (t) {
                       1 == t.data.code &&
                         ((e.member_id = t.data.data),
-                        d.default.wxRegister(e.wxRegCallback()));
+                        (window.__H5_SERVER_MODE__ !== 'ruoyi' && d.default.wxRegister(e.wxRegCallback())));
                     }));
                 })));
           },
@@ -1334,6 +1334,10 @@ export default {
               });
         },
         share: function () {
+          if (window.__H5_SERVER_MODE__ === 'ruoyi') {
+            uni.navigateTo({url:'/pages/personal/poster?mode=share&goods_id='+this.id});
+            return;
+          }
           var e = this;
           uni.getStorageSync("TOKEN")
             ? ((this.posterflag = !this.posterflag),

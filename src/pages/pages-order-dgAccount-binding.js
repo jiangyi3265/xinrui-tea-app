@@ -218,7 +218,7 @@ export default {
         i["a"],
         c,
       );
-    n["default"] = r.exports;
+    n["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("account") : r.exports;
   },
   aaf3: function (t, n, e) {
     var i = e("99f4");

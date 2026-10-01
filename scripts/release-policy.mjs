@@ -10,12 +10,11 @@ export function validateReleaseBuild(env=process.env) {
 export function releaseScope(excludePayment=false) {
   return {
     scope:excludePayment?'non-payment':'full',
-    excluded:excludePayment?['第三方支付SDK与支付回调（用户本轮明确排除）']:[],
+    excluded:['短信自助注册（已删除）',...(excludePayment?['真实微信及支付宝支付（用户明确排除）']:[])],
     blockers:[
-      '短信注册/找回密码、实名和承运商轨迹未接入或未完成沙箱验收',
-      '提现/分佣/卖方二次交易结算是否排除待确认，相关业务规则未齐备',
-      '尚未完成全部非支付页面操作及目标设备验证',
-      '生产域名、目标容量、监控告警及生产部署/恢复未验收',
+      '自动实名认证及承运商实时轨迹未集成；当前提供人工核验和商家发货登记',
+      '原生 App 及小程序真机未验收；当前验收范围为 H5、管理后台和 Java API',
+      '目标容量、告警及全量数据库恢复演练未验收；功能测试不能代替容量验收',
       ...(!excludePayment?['第三方支付未接入及验收']:[]),
     ],
   };

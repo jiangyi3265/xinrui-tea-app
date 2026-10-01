@@ -332,7 +332,7 @@ export function adminBusinessApi(store, route, params, admin, method) {
   }
   if (route === '/tea/members' && method === 'GET') {
     const keyword = String(params.keyword || params.nickName || params.phone || '').trim();
-    const rows = state.users.filter((user) => !keyword || [user.nickName, user.phone, user.invitation_code].some((value) => String(value).includes(keyword))).map((user) => ({ memberId: user.member_id, member_id: user.member_id, nickName: user.nickName, phone: user.phone, amount: user.amount, score: user.score, eCardNumber: user.e_card_number, invitationCode: user.invitation_code, status: user.status === '1' ? '停用' : '正常', createTime: user.create_time || '' }));
+    const rows = state.users.filter((user) => !keyword || [user.nickName, user.phone, user.invitation_code].some((value) => String(value).includes(keyword))).map((user) => ({ memberId: user.member_id, member_id: user.member_id, nickName: user.nickName, phone: user.phone, amount: user.amount, score: user.score, eCardNumber: user.e_card_number, invitationCode: user.invitation_code, parentId:user.parentId || 0, certification:user.certification || {status:'未提交'}, status: user.status === '1' ? '停用' : '正常', createTime: user.create_time || '' }));
     return ok(page(rows, params));
   }
   const memberMatch = route.match(/^\/tea\/members\/(\d+)$/);

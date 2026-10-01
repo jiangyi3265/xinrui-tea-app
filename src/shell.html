@@ -29,12 +29,17 @@
       });
     </script>
     <link rel="stylesheet" href="/h5/static/index.9ffdaeb8.css">
+    <style>
+      /* The legacy framework preloads an unused off-screen CDN shadow image. */
+      body::after { -webkit-animation: none; animation: none; }
+    </style>
   </head>
   <body>
     <noscript>请开启 JavaScript 以使用商城。</noscript>
     <div id="app"></div>
     <script src="/h5/static/demo/config.js"></script>
     <script src="/h5/static/demo/runtime.js"></script>
+    <script src="/h5/static/demo/workflows.js"></script>
     <script src="/h5/static/js/chunk-vendors.6be94bb2.js"></script>
     <script src="/h5/static/js/index.d3f35ec3.js"></script>
     <script src="/h5/static/demo/bridge.js"></script>

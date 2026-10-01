@@ -80,7 +80,7 @@ export default {
         n["a"],
         s,
       );
-    t["default"] = d.exports;
+    t["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("team") : d.exports;
   },
   c1ed: function (e, t, i) {
     var n = i("24fb");

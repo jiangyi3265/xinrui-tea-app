@@ -5,6 +5,7 @@ import { passwordMatches, passwordHash } from './store.mjs';
 import crypto from 'node:crypto';
 import { auctionView, ensureAuctions } from './demo/auction.mjs';
 import { sharedPublic, categories } from './shared-public.mjs';
+import { workflowsH5, workflowsAdmin, defaults, commissionSnapshot, settleCommission } from './workflows.mjs';
 
 // External providers are deliberately NOT simulated in shared mode.
 const publicRoutes = new Set([
@@ -48,6 +49,7 @@ const postOnly = new Set([
   '/member/toTransfer','/member/setPay','/auction/bid','/auction/settle','/_upload',
 ]);
 const contents = {
+  business: '/business/rules',
   store: '/index/getStoreInfo', banners: '/index/getBannerList',
   navigation: '/index/getNavLists', share: '/index/getShareInfo',
   rules: '/finance/getSystemInfo', agreement: '/index/getGroupAfterSalesAgreement',
@@ -78,6 +80,7 @@ function initialize(store) {
   const s = store.state;
   for (const user of s.users) seedUser(store, user);
   s.content ||= {};
+  s.content.business ||= clone(defaults);
   s.content.store ||= { ...clone(fixtures['/index/getStoreInfo'].data), pay: {}, register_verify: '1' };
 }
 function validatePaymentPassword(store, user, p, token) {
@@ -86,9 +89,11 @@ function validatePaymentPassword(store, user, p, token) {
 export function sharedH5(store, route, p, token, method) {
   initialize(store);
   if (!['GET','POST'].includes(method) || (postOnly.has(route) && method!=='POST')) return fail('此接口不支持该请求方法，操作未执行');
-  if (['/member/registerAnAccount','/v1/sms'].includes(route)) return fail('短信服务未配置，当前不能自助注册或发送验证码，请联系管理员');
+  if (['/member/registerAnAccount','/v1/sms'].includes(route)) return fail('此接口已关闭，账号由管理员建立');
   if (route==='/member/logout') { delete store.state.sessions[token]; return ok({},'已退出登录'); }
   const user = store.user(token);
+  const workflow=workflowsH5(store,route,p,token,method);
+  if (workflow) return workflow;
   const publicResult=sharedPublic(store,route,p,user);
   if (publicResult) return publicResult;
   const contentKey = Object.keys(contents).find(k => contents[k] === route);
@@ -122,6 +127,13 @@ export function sharedH5(store, route, p, token, method) {
     return ok({file_id:hash,file_path:p.image});
   }
   if (route === '/member/getApplyList') return ok(user.withdrawals);
+  if (['/order/receipt','/member/order/receipt'].includes(route)) {
+    const inventory=user.warehouse.find(w=>String(w.order_id)===String(p.order_id));
+    if(inventory) {
+      if(!inventory.delivery_order_id)return fail('请先申请提货，并等待商家实际发货');
+      p={...p,order_id:inventory.delivery_order_id};
+    }
+  }
   if (route === '/order/remindShipment') {
     if (method !== 'POST') return fail('请使用 POST 提交发货提醒');
     const order = user.orders.find(o => String(o.order_id) === String(p.order_id));
@@ -266,16 +278,17 @@ export function sharedH5(store, route, p, token, method) {
   }
   if (route === '/recharge/getOk' && !user.recharges.some(x => String(x.order_id) === String(p.order_id))) return fail('充值订单不存在');
   if (route === '/recharge/toOrder') {
+    if (p.asset && !['amount','score'].includes(p.asset)) return fail('请选择余额或积分账户');
     const packages = [555,666,888,999,1299,3999];
     const inputAmount = String(p.custom_price === '' || p.custom_price == null ? packages[Number(p.recharge_id) - 1] : p.custom_price);
     const amount = Number(inputAmount);
     if (!/^(?:0|[1-9]\d*)(?:\.\d{1,2})?$/.test(inputAmount) || !Number.isFinite(amount) || amount <= 0 || amount > 1000000) return fail('请输入有效充值金额');
     if (!verifiedImage(user, p.pay_image)) return fail('请通过上传接口上传本账号的有效图片凭证');
     const duplicate = user.recharges.find(x => x.pay_image === p.pay_image);
-    if (duplicate) return Number(duplicate.price) === amount ? ok(duplicate.order_id, '该凭证已提交') : fail('同一凭证不可重复充值');
+    if (duplicate) return Number(duplicate.price) === amount && (duplicate.asset || 'score') === (p.asset || 'score') ? ok(duplicate.order_id, '该凭证已提交') : fail('同一凭证不可重复充值');
     const id = store.id();
     if (!claimVoucher(store, p.pay_image, 'recharge:' + user.member_id + ':' + id)) return fail('此凭证已用于其他业务，请勿重复提交');
-    user.recharges.unshift({ order_id: id, order_no: 'R' + id, price: money(amount), amount: money(amount), actual_score: money(amount), face_value: money(amount), pay_image: p.pay_image, pay_type: Number(p.pay_type || 3), status: 0, status_text: '待审核', create_time: now() });
+    user.recharges.unshift({ order_id: id, order_no: 'R' + id, asset:p.asset || 'score', price: money(amount), amount: money(amount), actual_score: money(amount), face_value: money(amount), pay_image: p.pay_image, pay_type: Number(p.pay_type || 3), status: 0, status_text: '待审核', create_time: now() });
     return ok(id, '充值申请已提交，等待审核');
   }
   if (route === '/order/payment_voucher') {
@@ -320,6 +333,7 @@ export function sharedH5(store, route, p, token, method) {
     result.msg = checkout ? '订单已创建，请完成支付' : '请使用已开通的支付方式';
     if (checkout) {
       const created = user.orders.find(o => o.order_id === result.data.order_id);
+      created.commissionPolicy = commissionSnapshot(store, user);
       created.order_sn = 'T' + created.order_id;
       created.order_no = created.order_sn;
       created.express_company = ''; created.express_no = '';
@@ -339,6 +353,12 @@ export function sharedH5(store, route, p, token, method) {
     result.msg = '支付已完成，请等待发货';
   }
   if (result.code === 1 && route === '/member/toTransfer') delete store.state.sessions[token].payVerifiedUntil;
+  if (result.code === 1 && ['/order/receipt','/member/order/receipt'].includes(route)) {
+    const order=user.orders.find(o=>String(o.order_id)===String(p.order_id));
+    settleCommission(store,user,order);
+    if (order?.warehouse_order_id) { const item=user.warehouse.find(w=>w.order_id===order.warehouse_order_id); if(item)item.pay_status='已提货'; }
+  }
+  if (result.code === 1 && typeof result.msg === 'string') result.msg=result.msg.replace(/（本地模拟）|（模拟）|模拟|到本地/g,'');
   // Never return fictional seller/payment details in shared auction settlement.
   if (route === '/auction/settle' && result.code === 1) {
     const goods = user.warehouse.find(x => x.order_id === result.data.order_id);
@@ -355,14 +375,19 @@ const adminOK = (data, msg = '操作成功') => ({ code: 200, msg, data });
 const adminFail = msg => ({ code: 400, msg, data: {} });
 export function sharedAdmin(store, route, p, actor, method) {
   initialize(store);
+  const workflow=workflowsAdmin(store,route,p,actor,method);
+  if (workflow) return workflow;
   const parts = route.split('/');
   const resource = parts[2], id = parts[3];
   if (resource==='products' && id==='categories' && method==='GET') return adminOK({categoryList:categories(store.state)});
   if (resource === 'members' && method === 'POST') {
     if (!/^1\d{10}$/.test(p.phone || '') || !String(p.nickName || '').trim() || String(p.password || '').length < 8 || !/^\d{6}$/.test(p.payPassword || '')) return adminFail('请输入手机号、昵称、至少八位登录密码及六位交易密码');
     if (store.state.users.some(user => user.phone === p.phone)) return adminFail('手机号已存在');
+    const parent=p.invitationCode ? store.state.users.find(u=>u.invitation_code===p.invitationCode && u.status!=='1') : null;
+    if (p.invitationCode && !parent) return adminFail('邀请人不存在或已停用');
     const member = { member_id: store.id(), phone: p.phone, nickName: String(p.nickName).slice(0,40), passwordHash: passwordHash(p.password), payPasswordHash: passwordHash(p.payPassword), amount: '0.00', score: '0.00', e_card_number: '0.00', status: '0', headimg: '/h5/static/img/photo.e65d4f32.png', create_time: now() };
     member.invitation_code = 'M' + member.member_id;
+    member.parentId = parent?.member_id || 0;
     seedUser(store, member); store.state.users.push(member);
     return adminOK({ memberId: member.member_id }, '会员已建立，资产初始为零');
   }
@@ -408,7 +433,7 @@ export function sharedAdmin(store, route, p, actor, method) {
       const goods = user.warehouse.find(x => x.order_id === record.order_id);
       if (resource === 'recharges') {
         record.status = approved ? 1 : 2; record.status_text = approved ? '已到账' : '已驳回';
-        if (approved) entry(store, user, 'score', Number(record.actual_score), '充值审核通过', record.order_id);
+        if (approved) entry(store, user, record.asset === 'amount' ? 'amount' : 'score', Number(record.actual_score), '充值审核通过', record.order_id);
       } else if (resource === 'settlements') {
         if (record.direction !== 'out' || !goods) return adminFail('此入口仅审核买方付款单');
         record.pay_status = approved ? 2 : 0;

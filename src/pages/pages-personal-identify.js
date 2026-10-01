@@ -251,7 +251,7 @@ nativeOn: {
         i["a"],
         o,
       );
-    a["default"] = c.exports;
+    a["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("identity") : c.exports;
   },
   be33: function (t, a, n) {
     "use strict";

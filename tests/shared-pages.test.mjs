@@ -55,7 +55,7 @@ test('H5 request mock: ordinary requests do not close caller loading and preserv
 });
 
 test('H5 remote adapter mock: shipment reminder uses Java for fetch and XHR, assets and external URLs stay unchanged',async()=>{
-  const source=(await fs.readFile(new URL('../src/browser/runtime.mjs',import.meta.url),'utf8')).replace(/^import .*;\n/gm,'');
+  const source=(await fs.readFile(new URL('../src/browser/runtime.mjs',import.meta.url),'utf8')).replace(/^import .*;\r?\n/gm,'');
   const calls=[]; class XHR { open(method,url){calls.push(url);} }
   const context={URL,Request,XMLHttpRequest:XHR,endpointMap:{},location:{href:'http://127.0.0.1:5180/',origin:'http://127.0.0.1:5180'},document:{currentScript:{src:'http://127.0.0.1:5180/h5/static/demo/runtime.js'}},window:{__H5_API_BASE__:'http://127.0.0.1:8080/app',fetch:url=>{calls.push(url);return Promise.resolve();}}};
   vm.runInNewContext(source,context);

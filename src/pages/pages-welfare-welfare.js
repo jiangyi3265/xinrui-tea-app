@@ -205,7 +205,7 @@ export default {
         n["a"],
         o,
       );
-    e["default"] = f.exports;
+    e["default"] = (typeof window !== "undefined" && window.__H5_SERVER_MODE__ === "ruoyi" && window.__teaWorkflowPage) ? window.__teaWorkflowPage("team") : f.exports;
   },
   "82d2": function (t, e, i) {
     "use strict";

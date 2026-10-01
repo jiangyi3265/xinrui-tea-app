@@ -1101,6 +1101,11 @@ export default {
             this.$tip(this.subscribe.message || "预约规则尚未配置，当前未开放");
             return;
           }
+          if (typeof window !== 'undefined' && window.__H5_SERVER_MODE__ === 'ruoyi') {
+            var page=this;
+            this.request('/order/subscribe',{specialarea_id:t}).then(function(result){page.$tip(result.data.msg);if(result.data.code===1)page.getMorning();}).catch(function(){page.$tip('预约暂时失败，请稍后重试');});
+            return;
+          }
           ((this.specialarea_id = t), (this.payflag = !0));
         },
         gopay: function () {
